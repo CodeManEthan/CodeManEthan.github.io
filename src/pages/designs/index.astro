@@ -1,0 +1,149 @@
+---
+const designs = [
+  {
+    slug: 'constellation',
+    name: 'Project Constellation',
+    blurb:
+      'Deep space. Each project is a glowing node in a 3D constellation — drag to orbit, hover for labels, click to open.',
+  },
+  {
+    slug: 'terminal',
+    name: 'Retro Terminal',
+    blurb:
+      'CRT phosphor green over an endless wireframe terrain flythrough. Projects as a terminal directory listing.',
+  },
+  {
+    slug: 'island',
+    name: 'Low-Poly Island',
+    blurb:
+      'Light and warm. A floating low-poly island diorama — each project is an object on the island. Hover to bounce, click to open.',
+  },
+  {
+    slug: 'flux',
+    name: 'Flux',
+    blurb:
+      'Editorial brutalism. Huge typography with an iridescent distorted blob that chases the cursor and cycles palettes on click.',
+  },
+  {
+    slug: 'gallery',
+    name: 'Gallery Flythrough',
+    blurb:
+      'Scroll-driven camera flight past floating project panels in midnight-violet space.',
+  },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Design Lab · Portfolio</title>
+  </head>
+  <body>
+    <main>
+      <h1>Design Lab</h1>
+      <p class="intro">
+        Five interactive 3D design directions for the portfolio. Open each one
+        full-screen; the current live design is at <a href="/">/</a>.
+      </p>
+      <ol>
+        {
+          designs.map((d) => (
+            <li>
+              <a href={`/designs/${d.slug}/`} class="design-link">
+                <strong>{d.name}</strong>
+                <span>{d.blurb}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </main>
+  </body>
+</html>
+
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: #0d1017;
+    color: #e6e9ef;
+    font-family: system-ui, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .intro {
+    color: #9aa3b2;
+    margin-bottom: 2.5rem;
+  }
+
+  a {
+    color: #5eead4;
+  }
+
+  ol {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    counter-reset: design;
+  }
+
+  li {
+    counter-increment: design;
+  }
+
+  .design-link {
+    display: block;
+    padding: 1.2rem 1.4rem;
+    border: 1px solid #232936;
+    border-radius: 12px;
+    text-decoration: none;
+    background: #131722;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+
+  .design-link:hover {
+    border-color: #5eead4;
+    transform: translateX(4px);
+  }
+
+  .design-link::before {
+    content: counter(design, decimal-leading-zero);
+    color: #5eead4;
+    font-family: ui-monospace, monospace;
+    font-size: 0.85rem;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .design-link strong {
+    color: #e6e9ef;
+    font-size: 1.15rem;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .design-link span {
+    color: #9aa3b2;
+    font-size: 0.92rem;
+  }
+</style>

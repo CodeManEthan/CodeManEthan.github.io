@@ -1,0 +1,570 @@
+---
+import { getCollection } from 'astro:content';
+import FluxBlob from '../../components/designs/flux/FluxBlob';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+const count = String(projects.length).padStart(2, '0');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Ethan (CodeManEthan) — software engineer & agentic engineer. Full-stack apps, desktop automation, and agent infrastructure."
+    />
+    <title>Ethan — Software & Agentic Engineer</title>
+  </head>
+  <body>
+    <header class="site-head">
+      <a class="wordmark" href="/">CodeManEthan<span class="tick">&reg;</span></a>
+      <nav>
+        <a href="#work">Work</a>
+        <a href="#about">About</a>
+        <a
+          href="https://github.com/CodeManEthan"
+          target="_blank"
+          rel="noopener">GitHub&nbsp;&nearr;</a
+        >
+        <a class="nav-mail" href="mailto:codemanethan@gmail.com">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="blob-stage" id="blob-stage" aria-hidden="true">
+          <FluxBlob client:only="react" />
+        </div>
+        <div class="hero-copy">
+          <p class="kicker">Ethan &middot; Portfolio &mdash; 2026</p>
+          <h1>
+            Software<br />
+            <span class="amp">&amp;</span> agentic<br />
+            engineering<span class="dot">.</span>
+          </h1>
+          <p class="lede">
+            I build full-stack apps, desktop automation, and agent
+            infrastructure &mdash; small, durable, understandable.
+          </p>
+          <p class="hint" aria-hidden="true">The blob is alive. Click it.</p>
+        </div>
+        <a class="scroll-cue" href="#work">Selected work &darr;</a>
+      </section>
+
+      <section class="work" id="work">
+        <header class="work-head">
+          <h2>Selected work</h2>
+          <span class="count">({count})</span>
+        </header>
+        <ol class="rows">
+          {
+            projects.map((p, i) => (
+              <li class="row">
+                <a class="row-link" href={`/projects/${p.id}/`}>
+                  <span class="num">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="row-main">
+                    <span class="row-title">{p.data.title}</span>
+                    <span class="row-summary">{p.data.summary}</span>
+                    <span class="row-tech">{p.data.tech.join(' · ')}</span>
+                  </span>
+                  <span class="row-cta" aria-hidden="true">&rarr;</span>
+                </a>
+                <div class="row-status">
+                  {p.data.status === 'public' && p.data.repo && (
+                    <a href={p.data.repo} target="_blank" rel="noopener">
+                      Repo&nbsp;&nearr;
+                    </a>
+                  )}
+                  {p.data.status === 'public' && !p.data.repo && (
+                    <span>Public</span>
+                  )}
+                  {p.data.status === 'private' && (
+                    <span>Source private &middot; demo on request</span>
+                  )}
+                  {p.data.status === 'soon' && <span>Repo coming soon</span>}
+                  {p.data.demo && (
+                    <a href={p.data.demo} target="_blank" rel="noopener">
+                      Demo&nbsp;&nearr;
+                    </a>
+                  )}
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+
+      <section class="about" id="about">
+        <h2>About</h2>
+        <div class="about-cols">
+          <p>
+            I work across the stack &mdash; Python and Flask on the back,
+            React and TypeScript on the front, Flutter for cross-platform,
+            Bash where it counts. Lately my focus is agentic engineering:
+            infrastructure that lets AI agents communicate durably and work
+            reliably.
+          </p>
+          <p>
+            This site is itself a project &mdash; a static Astro build with
+            React islands and a Three.js hero, deployed on every push. Each
+            project is a single markdown file.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-foot">
+      <p class="foot-kicker">Have a project in mind?</p>
+      <a class="big-mail" href="mailto:codemanethan@gmail.com"
+        >codemanethan@gmail.com</a
+      >
+      <div class="foot-meta">
+        <span>&copy; 2026 Ethan &middot; CodeManEthan</span>
+        <a href="https://github.com/CodeManEthan" target="_blank" rel="noopener"
+          >github.com/CodeManEthan&nbsp;&nearr;</a
+        >
+      </div>
+    </footer>
+
+    <script>
+      // Scroll-linked motion: the blob drifts down, shrinks and fades as
+      // you scroll past the hero. Skipped for reduced-motion users.
+      const stage = document.getElementById('blob-stage');
+      const reduced = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      ).matches;
+      if (stage && !reduced) {
+        let ticking = false;
+        const update = () => {
+          ticking = false;
+          const y = window.scrollY;
+          const t = Math.min(y / 700, 1);
+          stage.style.transform = `translateY(${y * 0.22}px) scale(${1 - t * 0.35})`;
+          stage.style.opacity = `${1 - t * 0.55}`;
+        };
+        window.addEventListener(
+          'scroll',
+          () => {
+            if (!ticking) {
+              ticking = true;
+              requestAnimationFrame(update);
+            }
+          },
+          { passive: true }
+        );
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  :global(html) {
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+  }
+  :global(*),
+  :global(*::before),
+  :global(*::after) {
+    box-sizing: inherit;
+    margin: 0;
+    padding: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(html) {
+      scroll-behavior: auto;
+    }
+  }
+
+  :global(body) {
+    --paper: #faf8f4;
+    --ink: #111111;
+    --ink-dim: #4c4a45;
+    --accent: #ff3e00;
+    --rule: #111111;
+    --hairline: rgba(17, 17, 17, 0.14);
+    background: var(--paper);
+    color: var(--ink);
+    font-family:
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      'Helvetica Neue',
+      Arial,
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  :global(::selection) {
+    background: var(--accent);
+    color: var(--paper);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  main,
+  .site-head,
+  .site-foot {
+    max-width: 84rem;
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 4vw, 3.5rem);
+  }
+
+  /* ---------- header ---------- */
+  .site-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-block: 1.4rem;
+    border-bottom: 2px solid var(--rule);
+  }
+  .wordmark {
+    font-weight: 900;
+    font-size: 1.05rem;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+  .tick {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .site-head nav {
+    display: flex;
+    gap: clamp(1rem, 3vw, 2.2rem);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .site-head nav a:hover {
+    color: var(--accent);
+  }
+  .nav-mail {
+    color: var(--accent);
+  }
+  .nav-mail:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative;
+    min-height: min(88vh, 56rem);
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid var(--rule);
+  }
+  .blob-stage {
+    position: absolute;
+    top: 50%;
+    right: -8%;
+    width: min(48rem, 78vw);
+    aspect-ratio: 1;
+    translate: 0 -50%;
+    z-index: 0;
+    will-change: transform, opacity;
+  }
+  .hero-copy {
+    position: relative;
+    z-index: 1;
+    padding-block: clamp(3rem, 8vh, 6rem);
+    pointer-events: none;
+  }
+  .hero-copy a {
+    pointer-events: auto;
+  }
+  .kicker {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-dim);
+    margin-bottom: 1.4rem;
+  }
+  h1 {
+    font-size: clamp(3.2rem, 10.5vw, 8.75rem);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+    text-transform: uppercase;
+    max-width: 12ch;
+  }
+  .amp,
+  .dot {
+    color: var(--accent);
+  }
+  .lede {
+    margin-top: 1.8rem;
+    max-width: 30rem;
+    font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+    font-weight: 500;
+    color: var(--ink-dim);
+  }
+  .hint {
+    margin-top: 1.1rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+  }
+  .scroll-cue {
+    position: absolute;
+    left: 0;
+    bottom: 1.2rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    z-index: 1;
+  }
+  .scroll-cue:hover {
+    color: var(--accent);
+  }
+
+  /* ---------- work ---------- */
+  .work {
+    padding-block: clamp(3.5rem, 9vh, 7rem) 0;
+  }
+  .work-head {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2.2rem;
+  }
+  h2 {
+    font-size: clamp(1.9rem, 4.5vw, 3.4rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .count {
+    font-weight: 800;
+    color: var(--accent);
+    font-size: clamp(1rem, 2vw, 1.4rem);
+  }
+
+  .rows {
+    list-style: none;
+    border-top: 2px solid var(--rule);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr auto;
+    align-items: start;
+    gap: 0 clamp(1rem, 3vw, 2.5rem);
+    border-bottom: 2px solid var(--rule);
+    padding: clamp(1.2rem, 3vw, 2rem) 0.75rem;
+    position: relative;
+    transition:
+      background-color 0.18s ease,
+      color 0.18s ease;
+  }
+  .row-link {
+    display: contents;
+  }
+  .num {
+    font-weight: 800;
+    font-size: clamp(0.95rem, 1.6vw, 1.2rem);
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    padding-top: 0.5em;
+  }
+  .row-main {
+    display: block;
+    min-width: 0;
+  }
+  .row-title {
+    display: inline-block;
+    font-size: clamp(1.7rem, 4.5vw, 3.4rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-repeat: no-repeat;
+    background-position: 0 96%;
+    background-size: 0% 0.09em;
+    transition: background-size 0.28s ease;
+  }
+  .row-summary {
+    display: block;
+    margin-top: 0.55rem;
+    max-width: 46rem;
+    font-size: 0.95rem;
+    color: var(--ink-dim);
+    transition: color 0.18s ease;
+  }
+  .row-tech {
+    display: block;
+    margin-top: 0.45rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-dim);
+    transition: color 0.18s ease;
+  }
+  .row-cta {
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    font-weight: 900;
+    padding-top: 0.15em;
+    opacity: 0;
+    translate: -0.4rem 0;
+    transition:
+      opacity 0.2s ease,
+      translate 0.2s ease;
+  }
+  .row-status {
+    grid-column: 2 / -1;
+    margin-top: 0.9rem;
+    display: flex;
+    gap: 1.2rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-dim);
+    transition: color 0.18s ease;
+  }
+  .row-status a {
+    color: var(--accent);
+    position: relative;
+    z-index: 2;
+  }
+  .row-status a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  /* row inversion on hover */
+  .row:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .row:hover .row-title {
+    background-size: 100% 0.09em;
+  }
+  .row:hover .row-summary,
+  .row:hover .row-tech,
+  .row:hover .row-status {
+    color: rgba(250, 248, 244, 0.72);
+  }
+  .row:hover .row-cta {
+    opacity: 1;
+    translate: 0 0;
+    color: var(--accent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .row,
+    .row-title,
+    .row-cta,
+    .row-summary,
+    .row-tech,
+    .row-status {
+      transition: none;
+    }
+  }
+
+  /* ---------- about ---------- */
+  .about {
+    padding-block: clamp(3.5rem, 9vh, 7rem);
+  }
+  .about h2 {
+    margin-bottom: 1.8rem;
+  }
+  .about-cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: clamp(1.5rem, 4vw, 3rem);
+    border-top: 1px solid var(--hairline);
+    padding-top: 1.8rem;
+  }
+  .about-cols p {
+    font-size: clamp(1rem, 1.4vw, 1.15rem);
+    font-weight: 500;
+    color: var(--ink-dim);
+    max-width: 34rem;
+  }
+
+  /* ---------- footer ---------- */
+  .site-foot {
+    border-top: 2px solid var(--rule);
+    padding-block: clamp(3rem, 8vh, 6rem) 2rem;
+  }
+  .foot-kicker {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-dim);
+    margin-bottom: 1rem;
+  }
+  .big-mail {
+    display: inline-block;
+    font-size: clamp(1.6rem, 6.2vw, 5.5rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-transform: lowercase;
+    word-break: break-all;
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 0.08em;
+    transition: background-size 0.3s ease, color 0.2s ease;
+  }
+  .big-mail:hover {
+    color: var(--accent);
+    background-size: 100% 0.08em;
+  }
+  .foot-meta {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.5rem;
+    margin-top: clamp(2rem, 5vh, 3.5rem);
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--hairline);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-dim);
+  }
+  .foot-meta a:hover {
+    color: var(--accent);
+  }
+
+  /* ---------- small screens ---------- */
+  @media (max-width: 720px) {
+    .blob-stage {
+      right: -30%;
+      top: 32%;
+      width: 30rem;
+      opacity: 0.85;
+    }
+    .hero {
+      min-height: 78vh;
+    }
+    .row {
+      grid-template-columns: 3rem 1fr auto;
+    }
+    .row-status {
+      flex-wrap: wrap;
+      gap: 0.4rem 1rem;
+    }
+  }
+</style>

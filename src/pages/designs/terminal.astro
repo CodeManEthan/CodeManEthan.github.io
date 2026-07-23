@@ -1,0 +1,689 @@
+---
+import { getCollection } from 'astro:content';
+import TerminalScene from '../../components/designs/terminal/TerminalScene';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const PERMS: Record<string, string> = {
+  public: '-rwxr-xr-x',
+  private: '-rw-------',
+  soon: '-rw-r--r--',
+};
+
+const shortRepo = (url: string) => url.replace(/^https?:\/\//, '');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Ethan — software engineer & agentic engineer. Full-stack apps, desktop automation, and agent infrastructure."
+    />
+    <title>ethan@portfolio:~$ — Software &amp; Agentic Engineer</title>
+  </head>
+  <body>
+    <div class="scanlines" aria-hidden="true"></div>
+
+    <header class="titlebar">
+      <span class="titlebar-dots" aria-hidden="true">
+        <i></i><i></i><i></i>
+      </span>
+      <span class="titlebar-title">ethan@portfolio: ~</span>
+      <nav class="titlebar-nav">
+        <a href="#projects">projects</a>
+        <a href="#about">about</a>
+        <a href="https://github.com/CodeManEthan" target="_blank" rel="noopener">github</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- ===================== HERO ===================== -->
+      <section class="hero">
+        <div class="hero-canvas" aria-hidden="true">
+          <TerminalScene client:only="react" />
+        </div>
+        <div class="hero-fade" aria-hidden="true"></div>
+
+        <div class="hero-term type-seq">
+          <p class="prompt-line">
+            <span class="prompt">ethan@portfolio:~$</span>
+            <span class="cmd" data-type>whoami</span>
+          </p>
+          <h1 class="type-reveal">
+            Ethan — software engineer <span class="amp">&amp;</span> agentic engineer.
+          </h1>
+          <p class="prompt-line">
+            <span class="prompt">ethan@portfolio:~$</span>
+            <span class="cmd" data-type>cat mission.txt</span>
+          </p>
+          <p class="hero-blurb type-reveal">
+            I build full-stack apps, desktop automation, and agent infrastructure
+            — things that are small, durable, and understandable.
+          </p>
+          <div class="hero-actions type-reveal">
+            <button id="boot-btn" class="btn btn-solid" type="button">
+              &#9656; BOOT SEQUENCE
+            </button>
+            <a class="btn" href="#projects">ls projects/</a>
+            <a class="btn" href="https://github.com/CodeManEthan" target="_blank" rel="noopener">
+              git remote -v
+            </a>
+          </div>
+          <p class="prompt-line type-reveal">
+            <span class="prompt">ethan@portfolio:~$</span>
+            <span class="cursor" aria-hidden="true"></span>
+          </p>
+          <p class="hero-hint type-reveal" aria-hidden="true">
+            // move the mouse to steer · scroll or hit BOOT to dive
+          </p>
+        </div>
+      </section>
+
+      <!-- ===================== PROJECTS ===================== -->
+      <section id="projects" class="section">
+        <p class="prompt-line section-cmd">
+          <span class="prompt">ethan@portfolio:~$</span>
+          <span class="cmd">ls -la projects/</span>
+        </p>
+        <p class="ls-total">total {projects.length}</p>
+
+        <ul class="proj-list">
+          {projects.map((p) => (
+            <li class="proj">
+              <a class="proj-row" href={`/projects/${p.id}/`}>
+                <span class="perms">{PERMS[p.data.status]}</span>
+                <span class="owner">ethan</span>
+                <span class:list={['pstatus', p.data.status]}>
+                  {p.data.status === 'soon' ? 'soon  ' : p.data.status}
+                </span>
+                <span class="pname">{p.id}/</span>
+                {p.data.featured && <span class="pflag" title="featured">*</span>}
+              </a>
+              <div class="proj-body">
+                <p class="ptree"><span class="tree" aria-hidden="true">&#9500;&#9472;</span> {p.data.summary}</p>
+                <p class="ptree ptech">
+                  <span class="tree" aria-hidden="true">&#9500;&#9472;</span> tech: {p.data.tech.join(' · ')}
+                </p>
+                <p class="ptree pmeta">
+                  <span class="tree" aria-hidden="true">&#9492;&#9472;</span>
+                  {p.data.status === 'public' && p.data.repo && (
+                    <a href={p.data.repo} target="_blank" rel="noopener">
+                      repo: {shortRepo(p.data.repo)}
+                    </a>
+                  )}
+                  {p.data.status === 'public' && !p.data.repo && <span>public release</span>}
+                  {p.data.status === 'private' && (
+                    <span>
+                      source private · demo on request
+                      {p.data.demo && (
+                        <>
+                          {' — '}
+                          <a href={p.data.demo} target="_blank" rel="noopener">live demo</a>
+                        </>
+                      )}
+                    </span>
+                  )}
+                  {p.data.status === 'soon' && <span>repo coming soon</span>}
+                  {p.data.demo && p.data.status !== 'private' && (
+                    <>
+                      {' · '}
+                      <a href={p.data.demo} target="_blank" rel="noopener">demo</a>
+                    </>
+                  )}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <p class="ls-note">// * = featured &nbsp;·&nbsp; click a row for full details</p>
+      </section>
+
+      <!-- ===================== ABOUT ===================== -->
+      <section id="about" class="section">
+        <p class="prompt-line section-cmd">
+          <span class="prompt">ethan@portfolio:~$</span>
+          <span class="cmd">cat about.txt</span>
+        </p>
+        <div class="about-body">
+          <p>
+            I work across the stack — Python and Flask on the backend, React and
+            TypeScript up front, Flutter for cross-platform apps, and Bash where
+            it counts. Lately my focus is agentic engineering: infrastructure
+            that lets AI agents communicate durably and work reliably.
+          </p>
+          <p>
+            This page is itself a small project: a static Astro site with a
+            React island rendering a Three.js wireframe terrain. No trackers,
+            no frameworks it doesn't need.
+          </p>
+          <p class="contact">
+            <span class="prompt">$</span> mail
+            <a href="mailto:codemanethan@gmail.com">codemanethan@gmail.com</a>
+            &nbsp;·&nbsp;
+            <span class="prompt">$</span> gh
+            <a href="https://github.com/CodeManEthan" target="_blank" rel="noopener">CodeManEthan</a>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>[process completed] &nbsp;&#169; {new Date().getFullYear()} Ethan · built with Astro + Three.js<span class="cursor" aria-hidden="true"></span></p>
+    </footer>
+
+    <script>
+      // BOOT button -> tell the 3D scene to dive.
+      const bootBtn = document.getElementById('boot-btn');
+      if (bootBtn) {
+        bootBtn.addEventListener('click', () => {
+          window.dispatchEvent(new CustomEvent('terminal-boot'));
+          bootBtn.textContent = '▸ BOOTING…';
+          bootBtn.setAttribute('disabled', '');
+          setTimeout(() => {
+            bootBtn.textContent = '▸ BOOT SEQUENCE';
+            bootBtn.removeAttribute('disabled');
+          }, 2500);
+        });
+      }
+
+      // Typewriter sequence for the hero. Progressive enhancement: without
+      // JS (or with reduced motion) all text is simply visible.
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!reduced) {
+        const seq = document.querySelector('.type-seq');
+        if (seq) {
+          const steps = Array.from(
+            seq.querySelectorAll<HTMLElement>('[data-type], .type-reveal')
+          );
+          // Hide everything, remember command text.
+          const cmds = new Map<HTMLElement, string>();
+          for (const el of steps) {
+            if (el.hasAttribute('data-type')) {
+              cmds.set(el, el.textContent ?? '');
+              el.textContent = '';
+              if (el.parentElement) el.parentElement.style.visibility = 'hidden';
+            } else {
+              el.classList.add('hidden-step');
+            }
+          }
+
+          const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+          (async () => {
+            await sleep(350);
+            for (const el of steps) {
+              if (el.hasAttribute('data-type')) {
+                if (el.parentElement) el.parentElement.style.visibility = '';
+                el.classList.add('typing');
+                const text = cmds.get(el) ?? '';
+                for (const ch of text) {
+                  el.textContent += ch;
+                  await sleep(38);
+                }
+                el.classList.remove('typing');
+                await sleep(180);
+              } else {
+                el.classList.remove('hidden-step');
+                el.classList.add('revealed');
+                await sleep(240);
+              }
+            }
+          })();
+        }
+      }
+    </script>
+
+    <style>
+      :root {
+        --bg: #020604;
+        --bg-raised: #04120a;
+        --green: #33ff66;
+        --green-soft: #9fe8b4;
+        --green-dim: #63a878;
+        --amber: #f5c15c;
+        --border: #10361f;
+        --glow: 0 0 8px rgba(51, 255, 102, 0.35);
+        --mono: ui-monospace, 'Cascadia Code', 'Fira Code', Menlo, Consolas,
+          'Liberation Mono', monospace;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--green-soft);
+        font-family: var(--mono);
+        font-size: 15px;
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      ::selection {
+        background: var(--green);
+        color: var(--bg);
+      }
+
+      a {
+        color: var(--green);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      a:focus-visible,
+      button:focus-visible {
+        outline: 2px solid var(--green);
+        outline-offset: 2px;
+      }
+
+      /* ---------- CRT scanlines + vignette ---------- */
+      .scanlines {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 2px,
+            rgba(0, 0, 0, 0.16) 2px,
+            rgba(0, 0, 0, 0.16) 3px
+          ),
+          radial-gradient(
+            ellipse at center,
+            transparent 58%,
+            rgba(0, 0, 0, 0.42) 100%
+          );
+      }
+
+      /* ---------- Title bar ---------- */
+      .titlebar {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.55rem 1.1rem;
+        background: rgba(2, 6, 4, 0.92);
+        border-bottom: 1px solid var(--border);
+        backdrop-filter: blur(4px);
+      }
+
+      .titlebar-dots {
+        display: inline-flex;
+        gap: 0.4rem;
+      }
+      .titlebar-dots i {
+        width: 0.65rem;
+        height: 0.65rem;
+        border-radius: 50%;
+        border: 1px solid var(--green-dim);
+        background: transparent;
+      }
+      .titlebar-dots i:first-child {
+        background: var(--green);
+        border-color: var(--green);
+      }
+
+      .titlebar-title {
+        color: var(--green-dim);
+        font-size: 0.85rem;
+      }
+
+      .titlebar-nav {
+        margin-left: auto;
+        display: flex;
+        gap: 1.3rem;
+        font-size: 0.9rem;
+      }
+      .titlebar-nav a::before {
+        content: './';
+        color: var(--green-dim);
+      }
+
+      /* ---------- Hero ---------- */
+      .hero {
+        position: relative;
+        min-height: calc(100vh - 3rem);
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      .hero-canvas {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+      }
+
+      .hero-fade {
+        position: absolute;
+        inset: auto 0 0 0;
+        height: 9rem;
+        z-index: 1;
+        pointer-events: none;
+        background: linear-gradient(to bottom, transparent, var(--bg));
+      }
+
+      .hero-term {
+        position: relative;
+        z-index: 2;
+        width: min(44rem, calc(100% - 2.4rem));
+        margin: 0 auto;
+        padding: 1.6rem 1.8rem;
+        background: rgba(2, 6, 4, 0.78);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        box-shadow: 0 0 40px rgba(51, 255, 102, 0.07);
+        pointer-events: none;
+      }
+      .hero-term a,
+      .hero-term button {
+        pointer-events: auto;
+      }
+
+      .prompt {
+        color: var(--green);
+        text-shadow: var(--glow);
+        font-weight: 600;
+      }
+
+      .prompt-line {
+        margin: 0.35rem 0;
+        color: var(--green-soft);
+        white-space: nowrap;
+      }
+
+      .cmd {
+        color: var(--green-soft);
+      }
+      .cmd.typing::after {
+        content: '\2588';
+        color: var(--green);
+        animation: none;
+      }
+
+      h1 {
+        font-size: clamp(1.5rem, 4.4vw, 2.3rem);
+        line-height: 1.25;
+        color: var(--green);
+        text-shadow: var(--glow);
+        font-weight: 700;
+        margin: 0.5rem 0 1rem;
+      }
+      .amp {
+        color: var(--green-dim);
+      }
+
+      .hero-blurb {
+        color: var(--green-soft);
+        max-width: 38rem;
+        margin: 0.5rem 0 1.2rem;
+      }
+
+      .hero-actions {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        margin: 0.4rem 0 1rem;
+      }
+
+      .btn {
+        display: inline-block;
+        font-family: inherit;
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--green-dim);
+        border-radius: 3px;
+        background: transparent;
+        color: var(--green);
+        cursor: pointer;
+      }
+      .btn:hover {
+        border-color: var(--green);
+        text-decoration: none;
+        box-shadow: var(--glow);
+      }
+      .btn-solid {
+        background: var(--green);
+        color: var(--bg);
+        border-color: var(--green);
+        font-weight: 700;
+      }
+      .btn-solid:hover {
+        filter: brightness(1.12);
+      }
+      .btn-solid[disabled] {
+        opacity: 0.7;
+        cursor: default;
+      }
+
+      .hero-hint {
+        color: var(--green-dim);
+        font-size: 0.8rem;
+        margin-top: 0.6rem;
+      }
+
+      .cursor::after {
+        content: '\2588';
+        color: var(--green);
+        animation: blink 1.1s steps(1) infinite;
+        margin-left: 0.15rem;
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+
+      .hidden-step {
+        visibility: hidden;
+      }
+      .revealed {
+        animation: fade-in 0.25s ease-out;
+      }
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+      }
+
+      /* ---------- Sections ---------- */
+      main {
+        display: block;
+      }
+
+      .section {
+        width: min(60rem, calc(100% - 2.4rem));
+        margin: 0 auto;
+        padding: 3.5rem 0 1rem;
+      }
+
+      .section-cmd {
+        font-size: 1.05rem;
+        margin-bottom: 0.4rem;
+      }
+      .section-cmd .cmd {
+        color: var(--green);
+      }
+
+      .ls-total {
+        color: var(--green-dim);
+        margin-bottom: 1.1rem;
+      }
+
+      /* ---------- Project listing ---------- */
+      .proj-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 1.3rem;
+      }
+
+      .proj {
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        background: rgba(4, 18, 10, 0.45);
+        overflow: hidden;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      }
+      .proj:hover {
+        border-color: var(--green-dim);
+        box-shadow: 0 0 18px rgba(51, 255, 102, 0.08);
+      }
+
+      .proj-row {
+        display: flex;
+        align-items: baseline;
+        gap: 1.2rem;
+        padding: 0.65rem 1rem;
+        background: rgba(4, 18, 10, 0.7);
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+        overflow-x: auto;
+      }
+      .proj-row:hover {
+        text-decoration: none;
+        background: rgba(16, 54, 31, 0.55);
+      }
+      .proj-row:hover .pname {
+        text-decoration: underline;
+      }
+
+      .perms {
+        color: var(--green-dim);
+        letter-spacing: 0.05em;
+      }
+      .owner {
+        color: var(--green-dim);
+      }
+
+      .pstatus {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .pstatus.public {
+        color: var(--green);
+      }
+      .pstatus.private {
+        color: var(--amber);
+      }
+      .pstatus.soon {
+        color: var(--green-dim);
+      }
+
+      .pname {
+        color: var(--green);
+        font-weight: 700;
+        text-shadow: var(--glow);
+      }
+
+      .pflag {
+        color: var(--amber);
+        font-weight: 700;
+      }
+
+      .proj-body {
+        padding: 0.7rem 1rem 0.8rem;
+      }
+
+      .ptree {
+        margin: 0.15rem 0;
+        color: var(--green-soft);
+      }
+      .tree {
+        color: var(--green-dim);
+        margin-right: 0.35rem;
+      }
+      .ptech {
+        color: var(--green-dim);
+        font-size: 0.9rem;
+      }
+      .pmeta {
+        font-size: 0.9rem;
+      }
+      .pmeta span {
+        color: var(--green-dim);
+      }
+
+      .ls-note {
+        margin-top: 1rem;
+        color: var(--green-dim);
+        font-size: 0.85rem;
+      }
+
+      /* ---------- About ---------- */
+      .about-body {
+        max-width: 46rem;
+        border-left: 2px solid var(--border);
+        padding-left: 1.2rem;
+        margin-top: 0.8rem;
+      }
+      .about-body p {
+        margin-bottom: 1rem;
+      }
+      .contact {
+        color: var(--green-soft);
+      }
+
+      /* ---------- Footer ---------- */
+      .footer {
+        width: min(60rem, calc(100% - 2.4rem));
+        margin: 3rem auto 0;
+        padding: 1.4rem 0 2rem;
+        border-top: 1px solid var(--border);
+        color: var(--green-dim);
+        font-size: 0.85rem;
+      }
+
+      /* ---------- Small screens ---------- */
+      @media (max-width: 640px) {
+        .titlebar-title {
+          display: none;
+        }
+        .hero-term {
+          padding: 1.1rem 1rem;
+        }
+        .proj-row {
+          gap: 0.7rem;
+        }
+        .perms,
+        .owner {
+          display: none;
+        }
+        .proj-row {
+          white-space: normal;
+        }
+      }
+
+      /* ---------- Reduced motion ---------- */
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        .cursor::after {
+          animation: none;
+        }
+        .revealed {
+          animation: none;
+        }
+      }
+    </style>
+  </body>
+</html>

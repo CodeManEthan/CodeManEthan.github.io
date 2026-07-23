@@ -1,0 +1,527 @@
+---
+import { getCollection } from 'astro:content';
+import ConstellationScene from '../../components/designs/constellation/ConstellationScene';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const nodes = projects.map((p) => ({
+  id: p.id,
+  title: p.data.title,
+  featured: p.data.featured,
+}));
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Ethan (CodeManEthan) — software engineer & agentic engineer. Seven projects, one constellation."
+    />
+    <title>Ethan · Project Constellation</title>
+  </head>
+  <body>
+    <header class="site-nav">
+      <a class="brand" href="/">CodeManEthan</a>
+      <nav>
+        <a href="#projects">Projects</a>
+        <a href="#about">About</a>
+        <a href="https://github.com/CodeManEthan" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="hero-canvas">
+        <ConstellationScene client:only="react" projects={nodes} />
+      </div>
+      <div class="hero-copy">
+        <p class="eyebrow">Software engineer · Agentic engineer</p>
+        <h1>Every project<br />is a star.</h1>
+        <p class="tagline">
+          I'm Ethan. I build full-stack apps, desktop automation, and agent
+          infrastructure — small, durable, understandable things. The seven
+          stars above are my projects.
+        </p>
+        <p class="hint">Drag to orbit &nbsp;·&nbsp; hover a star &nbsp;·&nbsp; click to enter</p>
+      </div>
+      <a class="scroll-cue" href="#projects" aria-label="Scroll to projects">
+        <span class="chevron"></span>
+      </a>
+    </section>
+
+    <main>
+      <section id="projects" class="projects">
+        <h2><span class="section-num">01</span> The constellation, mapped</h2>
+        <div class="proj-list">
+          {
+            projects.map((p, i) => (
+              <article class="proj">
+                <span class="num">{String(i + 1).padStart(2, '0')}</span>
+                <div class="proj-body">
+                  <div class="proj-head">
+                    <a class="proj-title" href={`/projects/${p.id}/`}>
+                      {p.data.title}
+                    </a>
+                    {p.data.featured && <span class="badge">Featured</span>}
+                  </div>
+                  <p class="summary">{p.data.summary}</p>
+                  <ul class="tech">
+                    {p.data.tech.map((t) => (
+                      <li>{t}</li>
+                    ))}
+                  </ul>
+                  <div class="proj-links">
+                    {p.data.status === 'public' && p.data.repo && (
+                      <a class="link" href={p.data.repo} target="_blank" rel="noopener">
+                        Source ↗
+                      </a>
+                    )}
+                    {p.data.status === 'private' && (
+                      <span class="status-note">Source private · demo on request</span>
+                    )}
+                    {p.data.status === 'soon' && (
+                      <span class="status-note">Repo coming soon</span>
+                    )}
+                    {p.data.demo && (
+                      <a class="link" href={p.data.demo} target="_blank" rel="noopener">
+                        Live demo ↗
+                      </a>
+                    )}
+                    <a class="link detail" href={`/projects/${p.id}/`}>
+                      Details →
+                    </a>
+                  </div>
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </section>
+
+      <section id="about" class="about">
+        <h2><span class="section-num">02</span> Ground control</h2>
+        <p>
+          I work across the stack — Python and Flask on the backend, React and
+          TypeScript on the front, Flutter for cross-platform apps, and Bash
+          where it counts. Lately my focus is agentic engineering: building the
+          infrastructure that lets AI agents communicate durably and work
+          reliably.
+        </p>
+        <p>
+          This site is itself one of the stars: a static Astro build with React
+          islands and a Three.js sky.
+        </p>
+        <div class="contact">
+          <a class="btn primary" href="mailto:codemanethan@gmail.com">codemanethan@gmail.com</a>
+          <a class="btn" href="https://github.com/CodeManEthan" target="_blank" rel="noopener">
+            github.com/CodeManEthan
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>© 2026 Ethan · charted from a small corner of the sky</p>
+    </footer>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background: #05070f;
+        color: #e7eaf6;
+        font-family:
+          ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+          'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      /* ---------- Nav ---------- */
+
+      .site-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.1rem clamp(1.2rem, 4vw, 3rem);
+        background: linear-gradient(rgba(5, 7, 15, 0.85), rgba(5, 7, 15, 0));
+      }
+
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        font-size: 0.95rem;
+      }
+
+      .site-nav nav {
+        display: flex;
+        gap: 1.6rem;
+      }
+
+      .site-nav nav a {
+        font-size: 0.85rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #9aa3c0;
+        transition: color 0.2s;
+      }
+
+      .site-nav nav a:hover {
+        color: #6ef3dc;
+      }
+
+      /* ---------- Hero ---------- */
+
+      .hero {
+        position: relative;
+        height: 100vh;
+        min-height: 640px;
+        background:
+          radial-gradient(ellipse 90% 65% at 50% 30%, #0b1230 0%, rgba(11, 18, 48, 0) 65%),
+          radial-gradient(ellipse 70% 50% at 75% 75%, rgba(38, 24, 74, 0.55) 0%, rgba(38, 24, 74, 0) 70%),
+          #05070f;
+        overflow: hidden;
+      }
+
+      .hero-canvas {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+      }
+
+      .hero-copy {
+        position: absolute;
+        z-index: 1;
+        left: clamp(1.2rem, 5vw, 4rem);
+        bottom: clamp(4.5rem, 12vh, 8rem);
+        max-width: 30rem;
+        pointer-events: none;
+      }
+
+      .hero-copy a {
+        pointer-events: auto;
+      }
+
+      .eyebrow {
+        font-size: 0.75rem;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: #6ef3dc;
+        margin-bottom: 1rem;
+      }
+
+      h1 {
+        font-size: clamp(2.4rem, 6vw, 4.2rem);
+        line-height: 1.08;
+        font-weight: 750;
+        letter-spacing: -0.02em;
+        margin-bottom: 1.1rem;
+        text-shadow: 0 0 40px rgba(110, 243, 220, 0.18);
+      }
+
+      .tagline {
+        color: #aab2cf;
+        font-size: 1.02rem;
+        margin-bottom: 1.4rem;
+      }
+
+      .hint {
+        font-size: 0.72rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #5c6488;
+      }
+
+      .scroll-cue {
+        position: absolute;
+        z-index: 1;
+        left: 50%;
+        bottom: 1.4rem;
+        transform: translateX(-50%);
+        width: 2.4rem;
+        height: 2.4rem;
+        display: grid;
+        place-items: center;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+      }
+
+      .scroll-cue:hover {
+        opacity: 1;
+      }
+
+      .chevron {
+        width: 0.7rem;
+        height: 0.7rem;
+        border-right: 2px solid #6ef3dc;
+        border-bottom: 2px solid #6ef3dc;
+        transform: rotate(45deg);
+        animation: bob 2.2s ease-in-out infinite;
+      }
+
+      @keyframes bob {
+        0%,
+        100% {
+          transform: rotate(45deg) translate(0, 0);
+        }
+        50% {
+          transform: rotate(45deg) translate(4px, 4px);
+        }
+      }
+
+      /* ---------- Sections ---------- */
+
+      main {
+        max-width: 58rem;
+        margin: 0 auto;
+        padding: 0 clamp(1.2rem, 4vw, 2rem);
+      }
+
+      h2 {
+        font-size: clamp(1.4rem, 3vw, 1.9rem);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin: 5.5rem 0 2.2rem;
+        display: flex;
+        align-items: baseline;
+        gap: 0.8rem;
+      }
+
+      .section-num {
+        font-size: 0.8rem;
+        letter-spacing: 0.2em;
+        color: #6ef3dc;
+        font-weight: 600;
+      }
+
+      /* ---------- Project list ---------- */
+
+      .proj-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+      }
+
+      .proj {
+        display: flex;
+        gap: 1.4rem;
+        padding: 1.5rem 1.6rem;
+        border: 1px solid rgba(140, 150, 200, 0.14);
+        border-radius: 1rem;
+        background: linear-gradient(160deg, rgba(15, 20, 42, 0.55), rgba(8, 11, 24, 0.55));
+        transition:
+          border-color 0.25s,
+          box-shadow 0.25s,
+          transform 0.25s;
+      }
+
+      .proj:hover {
+        border-color: rgba(110, 243, 220, 0.4);
+        box-shadow:
+          0 0 34px rgba(110, 243, 220, 0.08),
+          inset 0 0 24px rgba(110, 243, 220, 0.03);
+        transform: translateY(-2px);
+      }
+
+      .num {
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        color: #5c6488;
+        padding-top: 0.35rem;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .proj-body {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .proj-head {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.4rem;
+      }
+
+      .proj-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        transition: color 0.2s;
+      }
+
+      .proj-title:hover {
+        color: #6ef3dc;
+      }
+
+      .badge {
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #6ef3dc;
+        border: 1px solid rgba(110, 243, 220, 0.45);
+        border-radius: 999px;
+        padding: 0.18rem 0.6rem;
+        box-shadow: 0 0 14px rgba(110, 243, 220, 0.15);
+      }
+
+      .summary {
+        color: #a6aecb;
+        font-size: 0.94rem;
+        margin-bottom: 0.8rem;
+        max-width: 44rem;
+      }
+
+      .tech {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        margin-bottom: 0.9rem;
+      }
+
+      .tech li {
+        font-size: 0.72rem;
+        letter-spacing: 0.05em;
+        color: #98a3ff;
+        background: rgba(129, 140, 248, 0.09);
+        border: 1px solid rgba(129, 140, 248, 0.22);
+        border-radius: 999px;
+        padding: 0.18rem 0.65rem;
+      }
+
+      .proj-links {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.2rem;
+        font-size: 0.85rem;
+      }
+
+      .link {
+        color: #6ef3dc;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        transition: text-shadow 0.2s;
+      }
+
+      .link:hover {
+        text-shadow: 0 0 12px rgba(110, 243, 220, 0.6);
+      }
+
+      .link.detail {
+        color: #98a3ff;
+      }
+
+      .link.detail:hover {
+        text-shadow: 0 0 12px rgba(152, 163, 255, 0.6);
+      }
+
+      .status-note {
+        color: #78809f;
+        font-size: 0.82rem;
+        font-style: italic;
+      }
+
+      /* ---------- About ---------- */
+
+      .about p {
+        color: #a6aecb;
+        max-width: 44rem;
+        margin-bottom: 1rem;
+      }
+
+      .contact {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+        margin-top: 1.6rem;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 0.65rem 1.3rem;
+        border-radius: 999px;
+        border: 1px solid rgba(140, 150, 200, 0.3);
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+
+      .btn:hover {
+        border-color: #6ef3dc;
+        box-shadow: 0 0 20px rgba(110, 243, 220, 0.18);
+      }
+
+      .btn.primary {
+        background: #6ef3dc;
+        border-color: #6ef3dc;
+        color: #05231c;
+      }
+
+      .btn.primary:hover {
+        box-shadow: 0 0 26px rgba(110, 243, 220, 0.45);
+      }
+
+      /* ---------- Footer ---------- */
+
+      footer {
+        margin-top: 6rem;
+        padding: 2.2rem clamp(1.2rem, 4vw, 2rem);
+        border-top: 1px solid rgba(140, 150, 200, 0.12);
+        text-align: center;
+        color: #5c6488;
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+      }
+
+      /* ---------- Responsive ---------- */
+
+      @media (max-width: 560px) {
+        .proj {
+          flex-direction: column;
+          gap: 0.5rem;
+          padding: 1.2rem 1.1rem;
+        }
+
+        .hero-copy {
+          bottom: 5rem;
+          right: 1.2rem;
+        }
+
+        .site-nav nav {
+          gap: 1rem;
+        }
+      }
+    </style>
+  </body>
+</html>
