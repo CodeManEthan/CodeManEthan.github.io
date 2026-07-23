@@ -1,0 +1,152 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import Hero3D from '../components/Hero3D';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+const featured = projects.filter((p) => p.data.featured);
+const rest = projects.filter((p) => !p.data.featured);
+---
+
+<Base title="Ethan · Software & Agentic Engineer">
+  <section class="hero">
+    <div class="hero-canvas" aria-hidden="true">
+      <Hero3D client:only="react" />
+    </div>
+    <div class="hero-text">
+      <h1>Hi, I'm Ethan.</h1>
+      <p class="tagline">
+        Software engineer &amp; agentic engineer. I build full-stack apps,
+        desktop automation, and agent infrastructure — and I like shipping
+        things that are small, durable, and understandable.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#projects">See my work</a>
+        <a class="btn" href="https://github.com/CodeManEthan" target="_blank" rel="noopener">GitHub profile</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects" class="projects">
+    <h2>Featured</h2>
+    <div class="grid">
+      {featured.map((project) => <ProjectCard project={project} />)}
+    </div>
+    {rest.length > 0 && (
+      <>
+        <h2>More projects</h2>
+        <div class="grid">
+          {rest.map((project) => <ProjectCard project={project} />)}
+        </div>
+      </>
+    )}
+  </section>
+
+  <section id="about" class="about">
+    <h2>About</h2>
+    <p>
+      I work across the stack — Python and Flask on the backend, React and
+      TypeScript on the front, Flutter for cross-platform apps, and Bash where
+      it counts. Lately my focus is agentic engineering: building the
+      infrastructure that lets AI agents communicate durably and work reliably.
+    </p>
+    <p>
+      This portfolio is itself one of my projects — a static Astro site with
+      React islands and a Three.js hero, deployed to GitHub Pages on every
+      push. Each project card is a single markdown file.
+    </p>
+    <p>
+      Reach me at <a href="mailto:codemanethan@gmail.com">codemanethan@gmail.com</a>.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+  }
+
+  .hero-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero-text {
+    position: relative;
+    z-index: 1;
+    max-width: 34rem;
+    pointer-events: none;
+  }
+
+  .hero-text a {
+    pointer-events: auto;
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 6vw, 3.4rem);
+    line-height: 1.15;
+    margin-bottom: 0.8rem;
+  }
+
+  .tagline {
+    color: var(--text-dim);
+    font-size: 1.1rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .btn:hover {
+    text-decoration: none;
+    border-color: var(--accent);
+  }
+
+  .btn.primary {
+    background: var(--accent);
+    color: #06251f;
+    border-color: var(--accent);
+  }
+
+  .btn.primary:hover {
+    filter: brightness(1.1);
+  }
+
+  h2 {
+    font-size: 1.6rem;
+    margin: 3.5rem 0 1.4rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.4rem;
+  }
+
+  .about p {
+    color: var(--text-dim);
+    max-width: 46rem;
+    margin-bottom: 1rem;
+  }
+</style>

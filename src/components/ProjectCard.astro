@@ -1,0 +1,143 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { title, summary, tech, status, repo, demo, screenshot } = project.data;
+const detailUrl = `/projects/${project.id}/`;
+---
+
+<article class="card">
+  <a href={detailUrl} class="thumb" aria-label={`View ${title}`}>
+    {
+      screenshot ? (
+        <img src={screenshot} alt={`${title} screenshot`} loading="lazy" />
+      ) : (
+        <div class="thumb-placeholder"><span>{title}</span></div>
+      )
+    }
+  </a>
+  <div class="card-body">
+    <h3><a href={detailUrl}>{title}</a></h3>
+    <p>{summary}</p>
+    <ul class="tech-list">
+      {tech.map((t) => <li>{t}</li>)}
+    </ul>
+    <div class="card-links">
+      {status === 'public' && repo && (
+        <a href={repo} target="_blank" rel="noopener">Source ↗</a>
+      )}
+      {status === 'private' && <span class="badge">Source private · demo on request</span>}
+      {status === 'soon' && <span class="badge">Repo coming soon</span>}
+      {demo && <a href={demo} target="_blank" rel="noopener">Live demo ↗</a>}
+      <a href={detailUrl} class="more">Details →</a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  }
+
+  .thumb {
+    display: block;
+    aspect-ratio: 16 / 9;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--accent-2) 18%, transparent), transparent 60%),
+      radial-gradient(circle at 70% 70%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 60%);
+    color: var(--text-dim);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  .card-body {
+    padding: 1.1rem 1.2rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    flex: 1;
+  }
+
+  h3 {
+    font-size: 1.15rem;
+  }
+
+  h3 a {
+    color: var(--text);
+  }
+
+  .card-body p {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    flex: 1;
+  }
+
+  .tech-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+  }
+
+  .tech-list li {
+    font-size: 0.78rem;
+    padding: 0.15rem 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 6%, transparent);
+  }
+
+  .card-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    align-items: center;
+    font-size: 0.88rem;
+    margin-top: 0.2rem;
+  }
+
+  .badge {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    border: 1px dashed var(--border);
+    border-radius: 999px;
+    padding: 0.12rem 0.6rem;
+  }
+
+  .more {
+    margin-left: auto;
+    color: var(--accent-2);
+  }
+</style>

@@ -1,0 +1,133 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { title, summary, tech, status, repo, demo, screenshot } = project.data;
+const { Content } = await render(project);
+---
+
+<Base title={`${title} · Ethan`} description={summary}>
+  <article class="project">
+    <a href="/#projects" class="back">← All projects</a>
+    <h1>{title}</h1>
+    <p class="summary">{summary}</p>
+    <div class="meta">
+      <ul class="tech-list">
+        {tech.map((t) => <li>{t}</li>)}
+      </ul>
+      <div class="links">
+        {status === 'public' && repo && (
+          <a href={repo} target="_blank" rel="noopener">Source on GitHub ↗</a>
+        )}
+        {status === 'private' && <span class="badge">Source private · demo on request</span>}
+        {status === 'soon' && <span class="badge">Repo coming soon</span>}
+        {demo && <a href={demo} target="_blank" rel="noopener">Live demo ↗</a>}
+      </div>
+    </div>
+    {screenshot && <img class="shot" src={screenshot} alt={`${title} screenshot`} />}
+    <div class="body">
+      <Content />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .project {
+    max-width: 46rem;
+    margin: 2.5rem auto 0;
+  }
+
+  .back {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    margin: 0.8rem 0 0.5rem;
+  }
+
+  .summary {
+    color: var(--text-dim);
+    font-size: 1.1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .tech-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+  }
+
+  .tech-list li {
+    font-size: 0.8rem;
+    padding: 0.15rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 6%, transparent);
+  }
+
+  .links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .badge {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    border: 1px dashed var(--border);
+    border-radius: 999px;
+    padding: 0.15rem 0.7rem;
+  }
+
+  .shot {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-bottom: 1.6rem;
+  }
+
+  .body :global(h2) {
+    font-size: 1.4rem;
+    margin: 2rem 0 0.8rem;
+  }
+
+  .body :global(h3) {
+    font-size: 1.15rem;
+    margin: 1.5rem 0 0.6rem;
+  }
+
+  .body :global(p) {
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+
+  .body :global(ul),
+  .body :global(ol) {
+    margin: 0 0 1rem 1.4rem;
+  }
+
+  .body :global(li) {
+    margin-bottom: 0.35rem;
+  }
+</style>
