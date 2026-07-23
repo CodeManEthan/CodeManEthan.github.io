@@ -2,9 +2,15 @@
 interface Props {
   title: string;
   description?: string;
+  /** Per-page accent color (a project's island gem color). */
+  accent?: string;
 }
 
-const { title, description = 'Portfolio of Ethan — software engineer and agentic engineer.' } = Astro.props;
+const {
+  title,
+  description = 'Portfolio of Ethan — software engineer and agentic engineer.',
+  accent = '#63c9a8',
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -16,7 +22,7 @@ const { title, description = 'Portfolio of Ethan — software engineer and agent
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
   </head>
-  <body>
+  <body style={`--accent: ${accent};`}>
     <header class="site-header">
       <nav>
         <a href="/" class="brand">CodeManEthan</a>
@@ -41,14 +47,13 @@ const { title, description = 'Portfolio of Ethan — software engineer and agent
 
 <style is:global>
   :root {
-    --bg: #0b0e14;
-    --bg-raised: #131722;
-    --border: #232936;
-    --text: #e6e9ef;
-    --text-dim: #9aa3b2;
-    --accent: #5eead4;
-    --accent-2: #818cf8;
-    --radius: 12px;
+    --cream: #fdf8ef;
+    --card: #ffffff;
+    --ink: #43405a;
+    --ink-soft: #7a7690;
+    --border: #ece3d2;
+    --mint: #63c9a8;
+    --radius: 16px;
     --max-width: 1080px;
   }
 
@@ -62,16 +67,22 @@ const { title, description = 'Portfolio of Ethan — software engineer and agent
     scroll-behavior: smooth;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
 
   a {
-    color: var(--accent);
+    color: color-mix(in srgb, var(--accent) 65%, var(--ink));
     text-decoration: none;
   }
 
@@ -89,7 +100,7 @@ const { title, description = 'Portfolio of Ethan — software engineer and agent
     position: sticky;
     top: 0;
     z-index: 10;
-    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    background: color-mix(in srgb, var(--cream) 88%, transparent);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
   }
@@ -104,9 +115,13 @@ const { title, description = 'Portfolio of Ethan — software engineer and agent
   }
 
   .brand {
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: 0.02em;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: 0.01em;
+  }
+
+  .brand:hover {
+    text-decoration: none;
   }
 
   .nav-links {
@@ -115,12 +130,13 @@ const { title, description = 'Portfolio of Ethan — software engineer and agent
   }
 
   .nav-links a {
-    color: var(--text-dim);
-    font-size: 0.95rem;
+    color: var(--ink-soft);
+    font-weight: 600;
+    font-size: 0.92rem;
   }
 
   .nav-links a:hover {
-    color: var(--text);
+    color: var(--ink);
     text-decoration: none;
   }
 
@@ -129,21 +145,21 @@ const { title, description = 'Portfolio of Ethan — software engineer and agent
     margin-top: 5rem;
     padding: 2rem 1.25rem;
     text-align: center;
-    color: var(--text-dim);
+    color: var(--ink-soft);
     font-size: 0.9rem;
   }
 
   code {
     font-family: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Menlo, monospace;
     font-size: 0.9em;
-    background: var(--bg-raised);
+    background: #f6efe1;
     border: 1px solid var(--border);
     border-radius: 6px;
     padding: 0.1em 0.35em;
   }
 
   pre {
-    background: var(--bg-raised);
+    background: #f6efe1;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 1rem;

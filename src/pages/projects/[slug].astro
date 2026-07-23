@@ -1,24 +1,40 @@
 ---
+import fs from 'node:fs';
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import { LOC, GEM_COLORS, fmtLoc, sizeLabel } from '../../data/islands';
 
 export async function getStaticPaths() {
-  const projects = await getCollection('projects');
-  return projects.map((project) => ({
+  const projects = (await getCollection('projects')).sort(
+    (a, b) => a.data.order - b.data.order
+  );
+  return projects.map((project, index) => ({
     params: { slug: project.id },
-    props: { project },
+    props: { project, accent: GEM_COLORS[index % GEM_COLORS.length] },
   }));
 }
 
-const { project } = Astro.props;
-const { title, summary, tech, status, repo, demo, screenshot } = project.data;
+const { project, accent } = Astro.props;
+const { title, summary, tech, status, repo, demo } = project.data;
+// Only render the screenshot if the file actually exists in public/
+const screenshot =
+  project.data.screenshot && fs.existsSync(`public${project.data.screenshot}`)
+    ? project.data.screenshot
+    : undefined;
+const loc = LOC[project.id];
 const { Content } = await render(project);
 ---
 
-<Base title={`${title} · Ethan`} description={summary}>
+<Base title={`${title} · Ethan`} description={summary} accent={accent}>
   <article class="project">
-    <a href="/#projects" class="back">← All projects</a>
-    <h1>{title}</h1>
+    <a href="/#projects" class="back">← Back to the archipelago</a>
+    <div class="title-row">
+      <span class="gem" aria-hidden="true"></span>
+      <h1>{title}</h1>
+    </div>
+    {loc && (
+      <p class="island-line">{fmtLoc(loc)} lines of code · {sizeLabel(loc)}</p>
+    )}
     <p class="summary">{summary}</p>
     <div class="meta">
       <ul class="tech-list">
@@ -47,17 +63,49 @@ const { Content } = await render(project);
   }
 
   .back {
-    color: var(--text-dim);
+    color: var(--ink-soft);
     font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .back:hover {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 1rem 0 0.15rem;
+  }
+
+  .gem {
+    width: 1.05rem;
+    height: 1.05rem;
+    background: var(--accent);
+    border-radius: 4px;
+    transform: rotate(45deg);
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 45%, transparent);
   }
 
   h1 {
     font-size: clamp(1.8rem, 5vw, 2.6rem);
-    margin: 0.8rem 0 0.5rem;
+    line-height: 1.2;
+  }
+
+  .island-line {
+    color: color-mix(in srgb, var(--accent) 70%, var(--ink));
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.9rem;
   }
 
   .summary {
-    color: var(--text-dim);
+    color: var(--ink-soft);
     font-size: 1.1rem;
     margin-bottom: 1.2rem;
   }
@@ -78,11 +126,12 @@ const { Content } = await render(project);
 
   .tech-list li {
     font-size: 0.8rem;
-    padding: 0.15rem 0.6rem;
-    border: 1px solid var(--border);
+    font-weight: 600;
+    padding: 0.18rem 0.65rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
     border-radius: 999px;
-    color: var(--accent);
-    background: color-mix(in srgb, var(--accent) 6%, transparent);
+    color: color-mix(in srgb, var(--accent) 60%, var(--ink));
+    background: color-mix(in srgb, var(--accent) 10%, var(--card));
   }
 
   .links {
@@ -90,14 +139,16 @@ const { Content } = await render(project);
     gap: 1rem;
     flex-wrap: wrap;
     align-items: center;
+    font-weight: 600;
   }
 
   .badge {
-    color: var(--text-dim);
+    color: var(--ink-soft);
     font-size: 0.85rem;
     border: 1px dashed var(--border);
     border-radius: 999px;
     padding: 0.15rem 0.7rem;
+    background: var(--card);
   }
 
   .shot {
@@ -105,6 +156,7 @@ const { Content } = await render(project);
     border-radius: var(--radius);
     border: 1px solid var(--border);
     margin-bottom: 1.6rem;
+    box-shadow: 0 10px 30px rgba(67, 64, 90, 0.08);
   }
 
   .body :global(h2) {
@@ -119,7 +171,6 @@ const { Content } = await render(project);
 
   .body :global(p) {
     margin-bottom: 1rem;
-    color: var(--text);
   }
 
   .body :global(ul),
@@ -129,5 +180,9 @@ const { Content } = await render(project);
 
   .body :global(li) {
     margin-bottom: 0.35rem;
+  }
+
+  .body :global(strong) {
+    color: color-mix(in srgb, var(--accent) 45%, var(--ink));
   }
 </style>
