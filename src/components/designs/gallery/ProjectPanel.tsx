@@ -7,6 +7,9 @@ import type { GalleryProject } from './GalleryScene';
 export const PANEL_W = 4.4;
 export const PANEL_H = 2.7;
 
+// Self-hosted font — see note in GalleryScene.tsx
+const FONT = '/fonts/LiberationSans-Regular.ttf';
+
 function roundedPlaneGeometry(w: number, h: number, r: number) {
   const shape = new THREE.Shape();
   const x = -w / 2;
@@ -157,7 +160,7 @@ export default function ProjectPanel({ project, position, approach, index }: Pro
 
       {/* Content */}
       {project.featured && (
-        <Text
+        <Text font={FONT}
           position={[PANEL_W / 2 - 0.32, 1.02, 0.02]}
           fontSize={0.11}
           letterSpacing={0.18}
@@ -168,7 +171,7 @@ export default function ProjectPanel({ project, position, approach, index }: Pro
           FEATURED
         </Text>
       )}
-      <Text
+      <Text font={FONT}
         position={[-PANEL_W / 2 + 0.35, 0.9, 0.02]}
         fontSize={0.3}
         color="#f5f0ff"
@@ -178,7 +181,7 @@ export default function ProjectPanel({ project, position, approach, index }: Pro
       >
         {project.title}
       </Text>
-      <Text
+      <Text font={FONT}
         position={[-PANEL_W / 2 + 0.35, 0.58, 0.02]}
         fontSize={0.135}
         color="#67e8f9"
@@ -188,7 +191,7 @@ export default function ProjectPanel({ project, position, approach, index }: Pro
       >
         {project.tech.join(' · ')}
       </Text>
-      <Text
+      <Text font={FONT}
         position={[-PANEL_W / 2 + 0.35, 0.34, 0.02]}
         fontSize={0.155}
         lineHeight={1.45}
@@ -199,7 +202,7 @@ export default function ProjectPanel({ project, position, approach, index }: Pro
       >
         {summary}
       </Text>
-      <Text
+      <Text font={FONT}
         position={[-PANEL_W / 2 + 0.35, -PANEL_H / 2 + 0.32, 0.02]}
         fontSize={0.125}
         color="#f0abfc"
@@ -208,7 +211,7 @@ export default function ProjectPanel({ project, position, approach, index }: Pro
       >
         {STATUS_LABEL[project.status] ?? project.status}
       </Text>
-      <Text
+      <Text font={FONT}
         position={[PANEL_W / 2 - 0.35, -PANEL_H / 2 + 0.32, 0.02]}
         fontSize={0.135}
         color="#22d3ee"

@@ -1,4 +1,5 @@
 import {
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -20,6 +21,10 @@ export interface GalleryProject {
 }
 
 const UP = new THREE.Vector3(0, 1, 0);
+
+// Self-hosted font: drei's <Text font={FONT}> otherwise fetches its default font from a CDN
+// at runtime and suspends the canvas until it resolves.
+const FONT = '/fonts/LiberationSans-Regular.ttf';
 
 function buildCurve(stops: number) {
   const pts: THREE.Vector3[] = [];
@@ -113,10 +118,10 @@ function IntroCard({ curve }: { curve: THREE.CatmullRomCurve3 }) {
   return (
     <Billboard position={[pos.x, pos.y, pos.z]}>
       <group ref={bob}>
-        <Text fontSize={0.62} color="#f5f0ff" anchorX="center" anchorY="middle" position={[0, 0.35, 0]}>
+        <Text font={FONT} fontSize={0.62} color="#f5f0ff" anchorX="center" anchorY="middle" position={[0, 0.35, 0]}>
           Ethan
         </Text>
-        <Text
+        <Text font={FONT}
           fontSize={0.2}
           color="#67e8f9"
           letterSpacing={0.1}
@@ -126,7 +131,7 @@ function IntroCard({ curve }: { curve: THREE.CatmullRomCurve3 }) {
         >
           Software & Agentic Engineer
         </Text>
-        <Text fontSize={0.15} color="#a78bfa" anchorX="center" anchorY="middle" position={[0, -0.85, 0]}>
+        <Text font={FONT} fontSize={0.15} color="#a78bfa" anchorX="center" anchorY="middle" position={[0, -0.85, 0]}>
           scroll to fly through the work ↓
         </Text>
       </group>
@@ -144,10 +149,10 @@ function OutroCard({ curve }: { curve: THREE.CatmullRomCurve3 }) {
 
   return (
     <Billboard position={[pos.x, pos.y, pos.z]}>
-      <Text fontSize={0.4} color="#f5f0ff" anchorX="center" anchorY="middle" position={[0, 0.3, 0]}>
+      <Text font={FONT} fontSize={0.4} color="#f5f0ff" anchorX="center" anchorY="middle" position={[0, 0.3, 0]}>
         That's the tour.
       </Text>
-      <Text
+      <Text font={FONT}
         fontSize={0.17}
         color={hovered ? '#f0abfc' : '#22d3ee'}
         anchorX="center"
@@ -372,17 +377,19 @@ export default function GalleryScene({ projects }: { projects: GalleryProject[] 
             onEl={(el) => (scrollElRef.current = el)}
           />
           <Rig curve={curve} />
-          <IntroCard curve={curve} />
-          {projects.map((p, j) => (
-            <ProjectPanel
-              key={p.id}
-              project={p}
-              index={j}
-              position={placements[j].position}
-              approach={placements[j].approach}
-            />
-          ))}
-          <OutroCard curve={curve} />
+          <Suspense fallback={null}>
+            <IntroCard curve={curve} />
+            {projects.map((p, j) => (
+              <ProjectPanel
+                key={p.id}
+                project={p}
+                index={j}
+                position={placements[j].position}
+                approach={placements[j].approach}
+              />
+            ))}
+            <OutroCard curve={curve} />
+          </Suspense>
           <Decor curve={curve} />
         </ScrollControls>
       </Canvas>
