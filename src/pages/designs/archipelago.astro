@@ -1,0 +1,629 @@
+---
+import { getCollection } from 'astro:content';
+import ArchipelagoScene from '../../components/designs/archipelago/ArchipelagoScene';
+
+// Real lines of code, measured from each repo. Keys = content entry ids.
+const LOC: Record<string, number> = {
+  'finance-tracker': 67732,
+  kdoitall: 26417,
+  'project-hub': 19773,
+  'pdf-merger': 13609,
+  'war-card-game': 3921,
+  'one-record-many-bells': 2330,
+  'montage-it': 1691,
+};
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+// Serializable prop for the 3D scene — one island per project, same order as
+// the cards. Island size in the scene is derived from `loc`.
+const islands = projects.map((p) => ({
+  id: p.id,
+  title: p.data.title,
+  loc: LOC[p.id] ?? 2000,
+  featured: p.data.featured,
+}));
+
+// Index-matched to GEM_COLORS in the scene so each card echoes its island.
+const gemColors = [
+  '#ef7f93',
+  '#f5a25d',
+  '#f0c75e',
+  '#6cc4d9',
+  '#9b8fe8',
+  '#63c9a8',
+  '#e98fc3',
+];
+
+function fmtLoc(n: number): string {
+  return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : `${n}`;
+}
+
+function sizeLabel(n: number): string {
+  if (n >= 25000) return 'large island';
+  if (n >= 10000) return 'mid-size island';
+  if (n >= 3000) return 'small island';
+  return 'tiny island';
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Ethan — software engineer & agentic engineer. Full-stack apps, desktop automation, and agent infrastructure."
+    />
+    <title>Ethan · Software & Agentic Engineer</title>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="/">CodeManEthan</a>
+      <nav>
+        <a href="#projects">Projects</a>
+        <a href="#about">About</a>
+        <a
+          href="https://github.com/CodeManEthan"
+          target="_blank"
+          rel="noopener">GitHub</a
+        >
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="hero-canvas">
+        <ArchipelagoScene client:only="react" projects={islands} />
+      </div>
+      <div class="hero-text">
+        <p class="kicker">Welcome to the archipelago</p>
+        <h1>Hi, I'm Ethan.</h1>
+        <p class="tagline">
+          Software engineer &amp; agentic engineer. Every island up here is one
+          of my projects, sized by its real codebase — and the little bots keep
+          everything running.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#projects">Explore my work</a>
+          <a class="btn" href="mailto:codemanethan@gmail.com">Say hello</a>
+        </div>
+      </div>
+      <p class="hero-hint" aria-hidden="true">
+        drag to orbit · scroll to zoom · click an island to visit · the bots
+        live here
+      </p>
+    </section>
+
+    <main>
+      <section id="projects" class="projects">
+        <h2>Seven islands, seven projects</h2>
+        <p class="section-sub">
+          Each floating island above is one of these — bigger repo, bigger
+          island, busier bots. Hover an island up there to see its stats, or
+          browse the cards down here.
+        </p>
+        <div class="grid">
+          {
+            projects.map((p, i) => (
+              <article
+                class={`card${p.data.featured ? ' featured' : ''}`}
+                style={`--gem: ${gemColors[i % gemColors.length]}`}
+              >
+                <div class="card-top">
+                  <span class="gem-dot" aria-hidden="true" />
+                  <h3>
+                    <a href={`/projects/${p.id}/`}>{p.data.title}</a>
+                  </h3>
+                  {p.data.featured && <span class="badge">Featured</span>}
+                </div>
+                <p class="summary">{p.data.summary}</p>
+                <p class="size-line">
+                  {`${fmtLoc(LOC[p.id] ?? 2000)} lines · ${sizeLabel(LOC[p.id] ?? 2000)}`}
+                </p>
+                <ul class="tech">
+                  {p.data.tech.map((t) => (
+                    <li>{t}</li>
+                  ))}
+                </ul>
+                <div class="card-links">
+                  <a class="more" href={`/projects/${p.id}/`}>
+                    View project →
+                  </a>
+                  {p.data.status === 'public' && p.data.repo && (
+                    <a
+                      class="repo"
+                      href={p.data.repo}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      Source ↗
+                    </a>
+                  )}
+                  {p.data.status === 'public' && !p.data.repo && (
+                    <span class="status public">Open source</span>
+                  )}
+                  {p.data.status === 'private' && (
+                    <span class="status private">
+                      Source private · demo on request
+                    </span>
+                  )}
+                  {p.data.status === 'soon' && (
+                    <span class="status soon">Repo coming soon</span>
+                  )}
+                  {p.data.demo && (
+                    <a
+                      class="repo"
+                      href={p.data.demo}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      Live demo ↗
+                    </a>
+                  )}
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </section>
+
+      <section id="about" class="about">
+        <h2>About the archipelago's keeper</h2>
+        <p>
+          I work across the stack — Python and Flask on the backend, React and
+          TypeScript on the front, Flutter for cross-platform apps, and Bash
+          where it counts. Lately my focus is agentic engineering: building the
+          infrastructure that lets AI agents communicate durably and work
+          reliably.
+        </p>
+        <p>
+          This page is itself a little project — a static Astro site with a
+          React island (seven of them, this time) rendered in Three.js,
+          complete with a resident bot population.
+        </p>
+        <div class="about-actions">
+          <a class="btn primary" href="mailto:codemanethan@gmail.com"
+            >codemanethan@gmail.com</a
+          >
+          <a
+            class="btn"
+            href="https://github.com/CodeManEthan"
+            target="_blank"
+            rel="noopener">github.com/CodeManEthan</a
+          >
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>© {new Date().getFullYear()} Ethan · Built with Astro, React &amp; Three.js</p>
+    </footer>
+  </body>
+</html>
+
+<style>
+  :root {
+    --cream: #fdf8ef;
+    --card: #ffffff;
+    --ink: #43405a;
+    --ink-soft: #7a7690;
+    --border: #ece3d2;
+    --sky-top: #c8e6f5;
+    --sky-mid: #e8f2ee;
+    --sky-bottom: #fdf3e2;
+    --mint: #63c9a8;
+    --rose: #ef7f93;
+    --lavender: #9b8fe8;
+    --honey: #f0c75e;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family:
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      'Helvetica Neue',
+      sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* ------------------------------- top bar ------------------------------- */
+
+  .topbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem clamp(1.2rem, 4vw, 3rem);
+  }
+
+  .wordmark {
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: 0.01em;
+  }
+
+  .topbar nav {
+    display: flex;
+    gap: 1.4rem;
+  }
+
+  .topbar nav a {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    transition: color 0.15s ease;
+  }
+
+  .topbar nav a:hover {
+    color: var(--ink);
+  }
+
+  /* --------------------------------- hero -------------------------------- */
+
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: linear-gradient(
+      180deg,
+      var(--sky-top) 0%,
+      var(--sky-mid) 62%,
+      var(--sky-bottom) 100%
+    );
+  }
+
+  .hero-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .hero-text {
+    position: relative;
+    z-index: 2;
+    max-width: 27rem;
+    margin-left: clamp(1.2rem, 6vw, 5rem);
+    padding: 1.6rem 1.8rem;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 22px;
+    box-shadow: 0 16px 40px rgba(67, 64, 90, 0.12);
+    pointer-events: none;
+  }
+
+  .hero-text a {
+    pointer-events: auto;
+  }
+
+  .kicker {
+    margin: 0 0 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mint);
+  }
+
+  h1 {
+    margin: 0 0 0.6rem;
+    font-size: clamp(2.1rem, 5.5vw, 3.1rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+  }
+
+  .tagline {
+    margin: 0 0 1.3rem;
+    color: var(--ink-soft);
+    font-size: 1.02rem;
+  }
+
+  .hero-actions,
+  .about-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.6rem 1.25rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    font-weight: 650;
+    font-size: 0.93rem;
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    border-color: var(--lavender);
+    box-shadow: 0 8px 20px rgba(67, 64, 90, 0.12);
+  }
+
+  .btn.primary {
+    background: var(--mint);
+    border-color: var(--mint);
+    color: #0e3f30;
+  }
+
+  .hero-hint {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    bottom: 1.1rem;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.6);
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+    font-weight: 550;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn:hover,
+    .card:hover {
+      transform: none;
+    }
+  }
+
+  /* ------------------------------- sections ------------------------------ */
+
+  main {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 clamp(1.2rem, 4vw, 3rem);
+  }
+
+  h2 {
+    margin: 4.5rem 0 0.4rem;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    letter-spacing: -0.01em;
+  }
+
+  .section-sub {
+    margin: 0 0 1.8rem;
+    color: var(--ink-soft);
+    max-width: 40rem;
+  }
+
+  /* -------------------------------- cards -------------------------------- */
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1.4rem;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 1.35rem 1.4rem 1.2rem;
+    box-shadow: 0 8px 24px rgba(67, 64, 90, 0.07);
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px rgba(67, 64, 90, 0.12);
+  }
+
+  .card.featured {
+    border-top: 4px solid var(--gem);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+  }
+
+  .gem-dot {
+    width: 12px;
+    height: 12px;
+    flex: none;
+    background: var(--gem);
+    transform: rotate(45deg);
+    border-radius: 3px;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--gem) 18%, transparent);
+  }
+
+  .card h3 {
+    margin: 0;
+    font-size: 1.12rem;
+    line-height: 1.3;
+  }
+
+  .card h3 a:hover {
+    color: var(--gem);
+  }
+
+  .badge {
+    margin-left: auto;
+    font-size: 0.68rem;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--gem) 70%, var(--ink));
+    background: color-mix(in srgb, var(--gem) 16%, #fff);
+    border-radius: 999px;
+    padding: 0.22rem 0.6rem;
+  }
+
+  .summary {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+    flex-grow: 1;
+  }
+
+  .size-line {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 650;
+    letter-spacing: 0.02em;
+    color: color-mix(in srgb, var(--gem) 55%, var(--ink-soft));
+  }
+
+  .tech {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tech li {
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.16rem 0.6rem;
+  }
+
+  .card-links {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+    margin-top: 0.2rem;
+    font-size: 0.86rem;
+  }
+
+  .more {
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .more:hover {
+    color: var(--gem);
+  }
+
+  .repo {
+    font-weight: 650;
+    color: var(--lavender);
+  }
+
+  .repo:hover {
+    text-decoration: underline;
+  }
+
+  .status {
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 0.2rem 0.65rem;
+  }
+
+  .status.public {
+    color: #1e6b50;
+    background: #dcf3e8;
+  }
+
+  .status.private {
+    color: #5a4f9e;
+    background: #ebe7fb;
+  }
+
+  .status.soon {
+    color: #8a6215;
+    background: #faf0d3;
+  }
+
+  /* -------------------------------- about -------------------------------- */
+
+  .about p {
+    max-width: 44rem;
+    color: var(--ink-soft);
+    margin: 0 0 1rem;
+  }
+
+  .about-actions {
+    margin-top: 1.4rem;
+  }
+
+  /* ------------------------------- footer -------------------------------- */
+
+  footer {
+    margin-top: 5rem;
+    padding: 2rem clamp(1.2rem, 4vw, 3rem);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 0.86rem;
+  }
+
+  footer p {
+    margin: 0;
+  }
+
+  /* ------------------------------- responsive ----------------------------- */
+
+  @media (max-width: 640px) {
+    .hero {
+      align-items: flex-end;
+      padding-bottom: 4.5rem;
+    }
+
+    .hero-text {
+      margin: 0 1rem 1rem;
+      padding: 1.2rem 1.3rem;
+    }
+
+    .hero-hint {
+      display: none;
+    }
+
+    .topbar nav {
+      gap: 1rem;
+    }
+  }
+</style>
