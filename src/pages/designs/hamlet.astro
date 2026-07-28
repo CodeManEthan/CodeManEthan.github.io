@@ -1,0 +1,675 @@
+---
+import { getCollection } from 'astro:content';
+import PixelHamlet from '../../components/designs/hamlet/PixelHamlet';
+import { LOC, GEM_COLORS, fmtLoc, sizeLabel } from '../../data/islands';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+// One plot per project. The scene sizes each building from `loc` and tints it
+// with the gem colour that matches the card below.
+const plots = projects.map((p, i) => ({
+  id: p.id,
+  title: p.data.title,
+  tech: p.data.tech,
+  status: p.data.status,
+  featured: p.data.featured,
+  loc: LOC[p.id] ?? 2000,
+  accent: GEM_COLORS[i % GEM_COLORS.length],
+}));
+
+const buildingSize = (n: number) => sizeLabel(n).replace('island', 'building');
+
+// The smallest codebase is the plot the villagers are still building on.
+const siteId = projects.reduce((a, b) =>
+  (LOC[a.id] ?? 2000) <= (LOC[b.id] ?? 2000) ? a : b
+).id;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Ethan — software engineer & agentic engineer. A pixel-art hamlet where every building is a project, sized by its real codebase, and the villagers keep building."
+    />
+    <title>Ethan · Software &amp; Agentic Engineer — Pixel Hamlet</title>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="/">CodeManEthan</a>
+      <nav>
+        <a href="#projects">Projects</a>
+        <a href="#about">About</a>
+        <a href="https://github.com/CodeManEthan" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </header>
+
+    <section class="hero" aria-label="Pixel-art village of Ethan's projects">
+      <div class="hero-scene">
+        <PixelHamlet client:only="react" projects={plots} headroom={300} />
+      </div>
+
+      <div class="hero-copy">
+        <p class="kicker">Welcome to the hamlet</p>
+        <h1>Hi, I&rsquo;m Ethan.</h1>
+        <p class="tagline">
+          Software engineer &amp; agentic engineer. Every building down there is
+          one of my projects, sized by its real codebase — and the villagers are
+          still putting up the next one.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#projects">Tour the village</a>
+          <a class="btn" href="mailto:codemanethan@gmail.com">Say hello</a>
+        </div>
+      </div>
+
+      <p class="hero-hint" aria-hidden="true">
+        hover a building for its stats · click to visit · tab to walk the village
+      </p>
+
+      <noscript>
+        <div class="noscript">
+          <p>
+            The village needs JavaScript to render. Every project is listed in
+            plain form below.
+          </p>
+        </div>
+      </noscript>
+    </section>
+
+    <main>
+      <section id="projects" class="projects">
+        <h2>Seven buildings, seven projects</h2>
+        <p class="section-sub">
+          Bigger codebase, bigger building — footprints scale by the cube root
+          of each repo&rsquo;s line count, so a 68k-line app is about twice the
+          size of a 1.7k-line one instead of forty times. The newest and
+          smallest is still scaffolding and lumber. Same content as the hamlet,
+          no canvas required.
+        </p>
+        <div class="grid">
+          {
+            projects.map((p, i) => (
+              <article
+                class={`card${p.data.featured ? ' featured' : ''}`}
+                style={`--gem: ${GEM_COLORS[i % GEM_COLORS.length]}`}
+              >
+                <div class="card-top">
+                  <span class="gem-dot" aria-hidden="true" />
+                  <h3>
+                    <a href={`/projects/${p.id}/`}>{p.data.title}</a>
+                  </h3>
+                  {p.data.featured && <span class="badge">Featured</span>}
+                </div>
+                <p class="summary">{p.data.summary}</p>
+                <p class="size-line">
+                  {`${fmtLoc(LOC[p.id] ?? 2000)} lines · ${buildingSize(LOC[p.id] ?? 2000)}`}
+                  {p.id === siteId && ' · under construction'}
+                </p>
+                <ul class="tech">
+                  {p.data.tech.map((t) => (
+                    <li>{t}</li>
+                  ))}
+                </ul>
+                <div class="card-links">
+                  <a class="more" href={`/projects/${p.id}/`}>
+                    View project →
+                  </a>
+                  {p.data.status === 'public' && p.data.repo && (
+                    <a class="repo" href={p.data.repo} target="_blank" rel="noopener">
+                      Source ↗
+                    </a>
+                  )}
+                  {p.data.status === 'private' && (
+                    <span class="status">Source private · demo on request</span>
+                  )}
+                  {p.data.status === 'soon' && (
+                    <span class="status">Repo coming soon</span>
+                  )}
+                  {p.data.demo && (
+                    <a class="repo" href={p.data.demo} target="_blank" rel="noopener">
+                      Live demo ↗
+                    </a>
+                  )}
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </section>
+
+      <section id="about" class="about">
+        <h2>The workshop at the centre</h2>
+        <p>
+          I&rsquo;m Ethan — a software engineer and agentic engineer. I work
+          across the stack: Python and Flask on the backend, React and
+          TypeScript on the front, Bash and desktop automation where it counts.
+          Lately my focus is agent infrastructure — the durable plumbing that
+          lets AI agents talk to each other and get work done.
+        </p>
+        <p>
+          The hamlet above is drawn from scratch: no game engine, no sprite
+          sheets, no 3D. Every roof, villager and lamp post is rasterised into a
+          buffer half the width of your screen and scaled back up in whole-pixel
+          steps, which is why the edges stay hard. The scaffolding is not
+          decoration — it&rsquo;s where the next project goes.
+        </p>
+        <div class="about-actions">
+          <a class="btn primary" href="mailto:codemanethan@gmail.com">
+            codemanethan@gmail.com
+          </a>
+          <a class="btn" href="https://github.com/CodeManEthan" target="_blank" rel="noopener">
+            github.com/CodeManEthan
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>© {new Date().getFullYear()} Ethan · Built with Astro, React &amp; a 2D canvas</p>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  /* ---- the canvas island's own chrome (React markup, so global) ---- */
+
+  .ph-wrap {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .ph-canvas {
+    position: absolute;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    display: block;
+  }
+
+  .ph-hits {
+    position: absolute;
+    inset: 0;
+  }
+
+  .ph-hit {
+    position: absolute;
+    display: block;
+    border-radius: 6px;
+    cursor: pointer;
+    outline-offset: 2px;
+  }
+
+  .ph-hit:focus-visible {
+    outline: 3px solid #43405a;
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .ph-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .ph-shoptag {
+    position: absolute;
+    transform: translate(-50%, 0);
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    background: rgba(255, 253, 246, 0.82);
+    border: 1px solid rgba(99, 201, 168, 0.55);
+    color: #43405a;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(67, 64, 90, 0.12);
+  }
+
+  .ph-tip {
+    position: absolute;
+    transform: translate(-50%, calc(-100% - 10px));
+    min-width: 9rem;
+    max-width: 15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.45rem 0.7rem;
+    background: rgba(255, 253, 246, 0.95);
+    border: 2px solid #43405a;
+    border-radius: 10px;
+    box-shadow: 0 8px 22px rgba(67, 64, 90, 0.18);
+    pointer-events: none;
+    z-index: 6;
+  }
+
+  .ph-tip-below {
+    transform: translate(-50%, 10px);
+  }
+
+  .ph-tip strong {
+    font-size: 0.92rem;
+    line-height: 1.25;
+  }
+
+  .ph-tip-meta {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #7a7690;
+  }
+
+  .ph-tip-tech {
+    font-size: 0.68rem;
+    color: #9a95ad;
+    line-height: 1.35;
+  }
+</style>
+
+<style>
+  :root {
+    --cream: #fdf8ef;
+    --card: #ffffff;
+    --ink: #43405a;
+    --ink-soft: #7a7690;
+    --border: #ece3d2;
+    --mint: #63c9a8;
+    --rose: #ef7f93;
+    --lavender: #9b8fe8;
+    --honey: #f0c75e;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family:
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      'Helvetica Neue',
+      sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* ------------------------------- top bar ------------------------------ */
+
+  .topbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem clamp(1.2rem, 4vw, 3rem);
+  }
+
+  .wordmark {
+    font-weight: 800;
+    font-size: 1.05rem;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  .topbar nav {
+    display: flex;
+    gap: 1.4rem;
+  }
+
+  .topbar nav a {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+    transition: color 0.15s ease;
+  }
+
+  .topbar nav a:hover {
+    color: var(--ink);
+  }
+
+  /* --------------------------------- hero ------------------------------- */
+
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    overflow: hidden;
+    background: linear-gradient(180deg, #a8dbf0 0%, #cfe5ef 55%, #fbeacd 100%);
+  }
+
+  .hero-scene {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .hero-copy {
+    position: relative;
+    z-index: 4;
+    max-width: 34rem;
+    margin: 0 auto;
+    padding: 4.6rem 1.4rem 0;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .hero-copy a {
+    pointer-events: auto;
+  }
+
+  .kicker {
+    margin: 0 0 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #2f8f74;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.75);
+  }
+
+  h1 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(2.1rem, 5.4vw, 3rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  .tagline {
+    margin: 0 auto 1.1rem;
+    max-width: 30rem;
+    color: #5c5877;
+    font-size: 1rem;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+
+  .hero-actions,
+  .about-actions {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .about-actions {
+    justify-content: flex-start;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: 2px solid var(--ink);
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--ink);
+    transition:
+      transform 0.14s ease,
+      box-shadow 0.14s ease;
+    box-shadow: 0 3px 0 rgba(67, 64, 90, 0.25);
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 rgba(67, 64, 90, 0.25);
+  }
+
+  .btn.primary {
+    background: var(--mint);
+    color: #12483a;
+  }
+
+  .hero-hint {
+    position: absolute;
+    z-index: 5;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 0.28rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(255, 253, 246, 0.7);
+    border: 1px solid rgba(67, 64, 90, 0.12);
+    color: var(--ink-soft);
+    font-size: 0.76rem;
+    pointer-events: none;
+  }
+
+  @media (max-height: 780px) {
+    .hero-copy {
+      padding-top: 3rem;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 4.4vw, 2.4rem);
+    }
+
+    .tagline {
+      font-size: 0.94rem;
+      margin-bottom: 0.85rem;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .hero-hint {
+      display: none;
+    }
+
+    .hero-copy {
+      padding-top: 3.6rem;
+    }
+
+    .topbar nav {
+      gap: 1rem;
+      font-size: 0.86rem;
+    }
+  }
+
+  .noscript {
+    position: absolute;
+    inset: auto 0 40% 0;
+    z-index: 5;
+    text-align: center;
+    color: var(--ink-soft);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-hint {
+      display: none;
+    }
+  }
+
+  /* -------------------------------- main -------------------------------- */
+
+  main {
+    max-width: 68rem;
+    margin: 0 auto;
+    padding: 4.5rem 1.4rem 2rem;
+  }
+
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    letter-spacing: -0.01em;
+  }
+
+  .section-sub {
+    margin: 0 0 2rem;
+    max-width: 44rem;
+    color: var(--ink-soft);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1.3rem;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 1.2rem 1.3rem;
+    transition:
+      transform 0.16s ease,
+      border-color 0.16s ease,
+      box-shadow 0.16s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: var(--gem);
+    box-shadow: 0 10px 26px rgba(67, 64, 90, 0.1);
+  }
+
+  .card.featured {
+    border-color: color-mix(in srgb, var(--gem) 45%, var(--border));
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .gem-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    background: var(--gem);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--gem) 25%, transparent);
+    flex: none;
+  }
+
+  .card h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  .card h3 a:hover {
+    color: var(--gem);
+  }
+
+  .badge {
+    margin-left: auto;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .summary {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    flex: 1;
+  }
+
+  .size-line {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: color-mix(in srgb, var(--gem) 65%, var(--ink));
+  }
+
+  .tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tech li {
+    font-size: 0.72rem;
+    padding: 0.1rem 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--ink-soft);
+  }
+
+  .card-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.85rem;
+    margin-top: 0.2rem;
+  }
+
+  .more {
+    font-weight: 700;
+    color: color-mix(in srgb, var(--gem) 70%, var(--ink));
+  }
+
+  .repo {
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+
+  .status {
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+    border: 1px dashed var(--border);
+    border-radius: 999px;
+    padding: 0.05rem 0.55rem;
+  }
+
+  /* -------------------------------- about ------------------------------- */
+
+  .about {
+    margin-top: 4.5rem;
+    max-width: 46rem;
+  }
+
+  .about p {
+    color: var(--ink-soft);
+    margin: 0 0 1rem;
+  }
+
+  footer {
+    border-top: 2px solid var(--border);
+    margin-top: 4rem;
+    padding: 1.5rem 1.4rem 2.2rem;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+  }
+
+  footer p {
+    margin: 0;
+  }
+</style>
