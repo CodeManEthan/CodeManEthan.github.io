@@ -1,0 +1,698 @@
+---
+import { getCollection } from 'astro:content';
+import CanopyScene from '../../components/designs/canopy/CanopyScene';
+import { LOC, GEM_COLORS, fmtLoc } from '../../data/islands';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+// Serializable prop for the R3F island: one treehouse per project. Platform
+// size in the scene comes from `loc`; `accent` is the project's gem colour.
+const perches = projects.map((p, i) => ({
+  id: p.id,
+  title: p.data.title,
+  tech: p.data.tech,
+  loc: LOC[p.id] ?? 2000,
+  featured: p.data.featured,
+  accent: GEM_COLORS[i % GEM_COLORS.length],
+}));
+
+function branchLabel(n: number): string {
+  if (n >= 25000) return 'a broad lower branch';
+  if (n >= 10000) return 'a mid-canopy branch';
+  if (n >= 3000) return 'a slim upper branch';
+  return 'a young top branch';
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Ethan — software engineer & agentic engineer. One great tree, a treehouse for every project, and the bots who keep building it."
+    />
+    <title>Ethan · Software &amp; Agentic Engineer — The Great Tree</title>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="/">CodeManEthan</a>
+      <nav>
+        <a href="#projects">Projects</a>
+        <a href="#about">About</a>
+        <a href="https://github.com/CodeManEthan" target="_blank" rel="noopener"
+          >GitHub</a
+        >
+      </nav>
+    </header>
+
+    <section class="hero" aria-label="The Great Tree — 3D project world">
+      <div class="hero-canvas">
+        <CanopyScene client:only="react" projects={perches} />
+      </div>
+
+      <div class="hero-text">
+        <p class="kicker">Welcome to the great tree</p>
+        <h1>Hi, I'm Ethan.</h1>
+        <p class="role">Software engineer &amp; agentic engineer</p>
+        <p class="tagline">
+          Every treehouse on this tree is one of my projects — the deck grows
+          with the size of the codebase. The bots live up here: crossing the
+          rope bridges, working the hoist, and framing out the next platform.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#projects">Explore my work</a>
+          <a class="btn" href="mailto:codemanethan@gmail.com">Say hello</a>
+        </div>
+      </div>
+
+      <p class="hero-hint" aria-hidden="true">
+        drag to orbit · scroll to zoom · hover a treehouse for its stats · click
+        to visit
+      </p>
+      <a class="skip" href="#projects">Skip to the project list ↓</a>
+
+      <noscript>
+        <div class="noscript-hero">
+          <h2>Hi, I'm Ethan.</h2>
+          <p>
+            Software engineer &amp; agentic engineer. The 3D tree needs
+            JavaScript — the full project list is right below, no WebGL
+            required.
+          </p>
+          <a class="btn primary" href="#projects">View projects ↓</a>
+        </div>
+      </noscript>
+    </section>
+
+    <main>
+      <section id="projects" class="projects">
+        <h2>Seven treehouses, seven projects</h2>
+        <p class="section-sub">
+          Each platform up in the tree is one of these. Bigger codebase, bigger
+          deck, more residents — and there's an eighth site still under
+          scaffolding.
+        </p>
+        <div class="grid">
+          {
+            projects.map((p, i) => {
+              const loc = LOC[p.id] ?? 2000;
+              return (
+                <article
+                  class={`card${p.data.featured ? ' featured' : ''}`}
+                  style={`--gem: ${GEM_COLORS[i % GEM_COLORS.length]}`}
+                >
+                  <div class="card-top">
+                    <span class="gem-dot" aria-hidden="true" />
+                    <h3>
+                      <a href={`/projects/${p.id}/`}>{p.data.title}</a>
+                    </h3>
+                    {p.data.featured && <span class="badge">Featured</span>}
+                  </div>
+                  <p class="summary">{p.data.summary}</p>
+                  <p class="size-line">
+                    {`${fmtLoc(loc)} lines · ${branchLabel(loc)}`}
+                  </p>
+                  <ul class="tech">
+                    {p.data.tech.map((t) => (
+                      <li>{t}</li>
+                    ))}
+                  </ul>
+                  <div class="card-links">
+                    <a class="more" href={`/projects/${p.id}/`}>
+                      View project →
+                    </a>
+                    {p.data.status === 'public' && p.data.repo && (
+                      <a
+                        class="repo"
+                        href={p.data.repo}
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        Source ↗
+                      </a>
+                    )}
+                    {p.data.status === 'private' && (
+                      <span class="status private">
+                        Source private · demo on request
+                      </span>
+                    )}
+                    {p.data.status === 'soon' && (
+                      <span class="status soon">Repo coming soon</span>
+                    )}
+                    {p.data.demo && (
+                      <a
+                        class="repo"
+                        href={p.data.demo}
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        Live demo ↗
+                      </a>
+                    )}
+                  </div>
+                </article>
+              );
+            })
+          }
+        </div>
+      </section>
+
+      <section id="about" class="about">
+        <h2>Up in the roost</h2>
+        <p>
+          I'm Ethan. I work across the stack — Python and Flask on the backend,
+          React and TypeScript on the front, Flutter for cross-platform apps,
+          and Bash where it counts. Lately my focus is agentic engineering:
+          building the durable infrastructure that lets AI agents communicate
+          and work reliably.
+        </p>
+        <p>
+          The roost at the top of the tree is mine — lantern lit, telescope out,
+          flag up. Everything below it is something I've built, and the
+          scaffolded platform is whatever comes next. The tree is designed to
+          keep growing: new branches, new decks, new residents.
+        </p>
+        <p>
+          This page is a project too — a static Astro site with a single React
+          island rendering the whole tree in Three.js. Prefer things quiet? The
+          list above is the same content with no WebGL at all.
+        </p>
+        <div class="about-actions">
+          <a class="btn primary" href="mailto:codemanethan@gmail.com"
+            >codemanethan@gmail.com</a
+          >
+          <a
+            class="btn"
+            href="https://github.com/CodeManEthan"
+            target="_blank"
+            rel="noopener">github.com/CodeManEthan</a
+          >
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>© {new Date().getFullYear()} Ethan · Built with Astro, React &amp; Three.js</p>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  astro-island {
+    display: contents;
+  }
+</style>
+
+<style>
+  :root {
+    --cream: #fdf8ef;
+    --card: #ffffff;
+    --ink: #43405a;
+    --ink-soft: #7a7690;
+    --border: #ece3d2;
+    --sky-top: #cfe9f7;
+    --sky-mid: #e4f2ea;
+    --sky-bottom: #fdf3e2;
+    --leaf: #6bbf7a;
+    --leaf-deep: #2f7a45;
+    --bark: #b08063;
+    --blossom: #f4b6cd;
+    --honey: #f0c75e;
+    --lavender: #9b8fe8;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family:
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      'Helvetica Neue',
+      sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* ------------------------------- top bar ------------------------------ */
+
+  .topbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem clamp(1.2rem, 4vw, 3rem);
+  }
+
+  .wordmark {
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: 0.01em;
+  }
+
+  .topbar nav {
+    display: flex;
+    gap: 1.4rem;
+  }
+
+  .topbar nav a {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    transition: color 0.15s ease;
+  }
+
+  .topbar nav a:hover {
+    color: var(--leaf-deep);
+  }
+
+  /* --------------------------------- hero ------------------------------- */
+
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background:
+      radial-gradient(
+        ellipse 60% 45% at 50% 88%,
+        rgba(107, 191, 122, 0.16),
+        transparent 70%
+      ),
+      linear-gradient(
+        180deg,
+        var(--sky-top) 0%,
+        var(--sky-mid) 58%,
+        var(--sky-bottom) 100%
+      );
+  }
+
+  .hero-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .hero-text {
+    position: relative;
+    z-index: 2;
+    max-width: 24.5rem;
+    margin-left: clamp(1.2rem, 5vw, 4rem);
+    padding: 1.5rem 1.7rem;
+    background: rgba(255, 255, 255, 0.74);
+    backdrop-filter: blur(9px);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 22px;
+    box-shadow: 0 16px 40px rgba(67, 64, 90, 0.13);
+    pointer-events: none;
+  }
+
+  .hero-text a {
+    pointer-events: auto;
+  }
+
+  .kicker {
+    margin: 0 0 0.3rem;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--leaf-deep);
+  }
+
+  h1 {
+    margin: 0 0 0.15rem;
+    font-size: clamp(2rem, 5vw, 2.9rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+  }
+
+  .role {
+    margin: 0 0 0.8rem;
+    font-size: 1.02rem;
+    font-weight: 650;
+    color: var(--bark);
+  }
+
+  .tagline {
+    margin: 0 0 1.25rem;
+    color: var(--ink-soft);
+    font-size: 0.97rem;
+  }
+
+  .hero-actions,
+  .about-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.58rem 1.2rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    color: var(--ink);
+    font-weight: 650;
+    font-size: 0.92rem;
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    border-color: var(--leaf);
+    box-shadow: 0 8px 20px rgba(67, 64, 90, 0.12);
+  }
+
+  .btn.primary {
+    background: var(--leaf);
+    border-color: var(--leaf);
+    color: #0f3d21;
+  }
+
+  .hero-hint {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    bottom: 1.05rem;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 0.34rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.68);
+    color: var(--ink-soft);
+    font-size: 0.79rem;
+    font-weight: 550;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .skip {
+    position: absolute;
+    z-index: 3;
+    right: clamp(1.2rem, 4vw, 3rem);
+    bottom: 1.05rem;
+    font-size: 0.79rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    background: rgba(255, 255, 255, 0.68);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 999px;
+    padding: 0.34rem 0.95rem;
+  }
+
+  .skip:hover {
+    color: var(--leaf-deep);
+  }
+
+  .noscript-hero {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.7rem;
+    text-align: center;
+    padding: 2rem;
+    background: var(--sky-bottom);
+  }
+
+  .noscript-hero h2 {
+    margin: 0;
+    font-size: clamp(1.9rem, 5vw, 2.8rem);
+  }
+
+  .noscript-hero p {
+    margin: 0;
+    max-width: 34rem;
+    color: var(--ink-soft);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn:hover,
+    .card:hover {
+      transform: none;
+    }
+  }
+
+  /* ------------------------------- sections ----------------------------- */
+
+  main {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 clamp(1.2rem, 4vw, 3rem);
+  }
+
+  h2 {
+    margin: 4.5rem 0 0.4rem;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    letter-spacing: -0.01em;
+  }
+
+  .section-sub {
+    margin: 0 0 1.8rem;
+    color: var(--ink-soft);
+    max-width: 42rem;
+  }
+
+  /* -------------------------------- cards ------------------------------- */
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1.4rem;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 1.35rem 1.4rem 1.2rem;
+    box-shadow: 0 8px 24px rgba(67, 64, 90, 0.07);
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px rgba(67, 64, 90, 0.12);
+  }
+
+  .card.featured {
+    border-top: 4px solid var(--gem);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .card h3 {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .gem-dot {
+    width: 12px;
+    height: 12px;
+    flex: none;
+    background: var(--gem);
+    transform: rotate(45deg);
+    border-radius: 3px;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--gem) 18%, transparent);
+  }
+
+  .card h3 {
+    margin: 0;
+    font-size: 1.12rem;
+    line-height: 1.3;
+  }
+
+  .card h3 a:hover {
+    color: var(--gem);
+  }
+
+  .badge {
+    margin-left: auto;
+    flex: none;
+    white-space: nowrap;
+    font-size: 0.68rem;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--gem) 70%, var(--ink));
+    background: color-mix(in srgb, var(--gem) 16%, #fff);
+    border-radius: 999px;
+    padding: 0.22rem 0.6rem;
+  }
+
+  .summary {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+    flex-grow: 1;
+  }
+
+  .size-line {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 650;
+    letter-spacing: 0.02em;
+    color: color-mix(in srgb, var(--gem) 55%, var(--ink-soft));
+  }
+
+  .tech {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tech li {
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.16rem 0.6rem;
+  }
+
+  .card-links {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+    margin-top: 0.2rem;
+    font-size: 0.86rem;
+  }
+
+  .more {
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .more:hover {
+    color: var(--gem);
+  }
+
+  .repo {
+    font-weight: 650;
+    color: var(--lavender);
+  }
+
+  .repo:hover {
+    text-decoration: underline;
+  }
+
+  .status {
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 0.2rem 0.65rem;
+  }
+
+  .status.private {
+    color: #5a4f9e;
+    background: #ebe7fb;
+  }
+
+  .status.soon {
+    color: #8a6215;
+    background: #faf0d3;
+  }
+
+  /* -------------------------------- about ------------------------------- */
+
+  .about p {
+    max-width: 44rem;
+    color: var(--ink-soft);
+    margin: 0 0 1rem;
+  }
+
+  .about-actions {
+    margin-top: 1.4rem;
+  }
+
+  /* ------------------------------- footer ------------------------------- */
+
+  footer {
+    margin-top: 5rem;
+    padding: 2rem clamp(1.2rem, 4vw, 3rem);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 0.86rem;
+  }
+
+  footer p {
+    margin: 0;
+  }
+
+  /* ------------------------------ responsive ---------------------------- */
+
+  @media (max-width: 820px) {
+    .hero {
+      align-items: flex-end;
+      padding-bottom: 4.2rem;
+    }
+
+    .hero-text {
+      margin: 0 1rem 1rem;
+      padding: 1.2rem 1.3rem;
+    }
+
+    .hero-hint,
+    .skip {
+      display: none;
+    }
+
+    .topbar nav {
+      gap: 1rem;
+    }
+  }
+</style>
