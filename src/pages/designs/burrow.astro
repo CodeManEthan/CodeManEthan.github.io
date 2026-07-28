@@ -1,0 +1,638 @@
+---
+import { getCollection } from 'astro:content';
+import { LOC, GEM_COLORS, fmtLoc, sizeLabel } from '../../data/islands';
+import BurrowScene from '../../components/designs/burrow/BurrowScene';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+// GEM_COLORS is index-matched to the order-sorted projects; the scene reuses
+// each project's gem as the colour of the crystal lighting its chamber.
+const sceneProjects = projects.map((p, i) => {
+  const loc = LOC[p.id] ?? 0;
+  return {
+    id: p.id,
+    title: p.data.title,
+    summary: p.data.summary,
+    tech: p.data.tech,
+    loc,
+    locLabel: fmtLoc(loc),
+    size: sizeLabel(loc).replace('island', 'chamber'),
+    color: GEM_COLORS[i % GEM_COLORS.length],
+  };
+});
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Ethan — software engineer & agentic engineer. A cutaway of an underground bot colony where every project is an excavated chamber."
+    />
+    <title>Ethan · Software &amp; Agentic Engineer — The Burrow</title>
+  </head>
+  <body>
+    <header class="top">
+      <a class="brand" href="/">CodeManEthan</a>
+      <nav>
+        <a href="#projects">Projects</a>
+        <a href="#about">About</a>
+        <a href="https://github.com/CodeManEthan" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </header>
+
+    <section id="burrow" aria-label="Cutaway of the burrow colony">
+      <div class="hero-copy">
+        <h1>Hi, I'm Ethan.</h1>
+        <p class="tagline">Software engineer &amp; agentic engineer</p>
+        <p class="blurb">
+          Every project I've built is a chamber down there, dug to the size of
+          its codebase. The bots are still digging.
+        </p>
+      </div>
+
+      <div class="hero-actions">
+        <p class="dig-hint">
+          <span>↓</span> Scroll to go deeper · hover a chamber for details,
+          click to open it
+        </p>
+        <a class="skip" href="#projects">Skip to project list ↓</a>
+      </div>
+
+      <BurrowScene client:only="react" projects={sceneProjects} />
+
+      <noscript>
+        <div class="noscript-hero">
+          <h2>The colony needs JavaScript to dig.</h2>
+          <p>Every project is listed in plain form below.</p>
+          <a href="#projects">View projects ↓</a>
+        </div>
+      </noscript>
+    </section>
+
+    <main>
+      <section id="projects">
+        <h2>All projects</h2>
+        <p class="section-lede">
+          Every chamber in the burrow, in plain form — each card links to a full
+          write-up.
+        </p>
+        <div class="grid">
+          {
+            projects.map((project, i) => {
+              const { title, summary, tech, status, repo, demo, featured } = project.data;
+              const detailUrl = `/projects/${project.id}/`;
+              const loc = LOC[project.id] ?? 0;
+              const color = GEM_COLORS[i % GEM_COLORS.length];
+              return (
+                <article class="card" style={`--gem:${color}`}>
+                  <div class="card-head">
+                    <h3>
+                      <a href={detailUrl}>{title}</a>
+                    </h3>
+                    {featured && <span class="star" title="Featured">★</span>}
+                  </div>
+                  <p class="chamber-meta">
+                    <span class="gem" aria-hidden="true"></span>
+                    {fmtLoc(loc)} lines · {sizeLabel(loc).replace('island', 'chamber')}
+                  </p>
+                  <p class="summary">{summary}</p>
+                  <ul class="tech-list">
+                    {tech.map((t) => (
+                      <li>{t}</li>
+                    ))}
+                  </ul>
+                  <div class="card-links">
+                    {status === 'public' && repo && (
+                      <a href={repo} target="_blank" rel="noopener">
+                        Source ↗
+                      </a>
+                    )}
+                    {status === 'private' && (
+                      <span class="badge">Source private · demo on request</span>
+                    )}
+                    {status === 'soon' && <span class="badge">Repo coming soon</span>}
+                    {demo && (
+                      <a href={demo} target="_blank" rel="noopener">
+                        Live demo ↗
+                      </a>
+                    )}
+                    <a href={detailUrl} class="more">
+                      Details →
+                    </a>
+                  </div>
+                </article>
+              );
+            })
+          }
+        </div>
+      </section>
+
+      <section id="about">
+        <h2>About</h2>
+        <p>
+          I'm Ethan — a software engineer and agentic engineer. I work across the
+          stack: Python and Flask on the backend, React and TypeScript on the
+          front, Bash and desktop automation where it counts. Lately my focus is
+          agent infrastructure — the durable plumbing that lets AI agents
+          communicate and work reliably.
+        </p>
+        <p>
+          The burrow above is drawn from real numbers: each chamber's floor area
+          comes from that project's measured line count, and its crystal is the
+          project's colour. The dig at the bottom of the shaft is the point —
+          the colony is meant to keep growing as new work lands.
+        </p>
+        <p class="contact">
+          <a href="mailto:codemanethan@gmail.com">codemanethan@gmail.com</a>
+          <span aria-hidden="true">·</span>
+          <a href="https://github.com/CodeManEthan" target="_blank" rel="noopener">github.com/CodeManEthan</a>
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <span>© 2026 Ethan · Built with Astro, React &amp; a lot of SVG dirt</span>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  astro-island {
+    display: contents;
+  }
+
+  :root {
+    --bg: #22150b;
+    --bg-raised: #32200f;
+    --text: #f8ecd9;
+    --text-dim: #cbb094;
+    --border: #4c3118;
+    --amber: #f6b06a;
+    --mint: #7fd3c3;
+    --clay: #e08e7a;
+    --cream: #fdf3e2;
+  }
+
+  html {
+    background: var(--bg);
+    color: var(--text);
+    font-family:
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      sans-serif;
+    line-height: 1.6;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  a {
+    color: var(--amber);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* ---------- the scene itself (rendered by React) ---------- */
+
+  .burrow-wrap {
+    position: relative;
+    display: block;
+  }
+
+  .burrow-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .burrow-svg text {
+    font-family:
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      sans-serif;
+  }
+
+  .chamber {
+    cursor: pointer;
+  }
+
+  .chamber text,
+  .chamber ellipse,
+  .chamber circle {
+    pointer-events: none;
+  }
+
+  .chamber .chamber-ring {
+    opacity: 0;
+    transition: opacity 0.16s ease;
+  }
+
+  .chamber:hover .chamber-ring,
+  .chamber:focus-visible .chamber-ring {
+    opacity: 0.95;
+  }
+
+  .chamber:focus {
+    outline: none;
+  }
+
+  .burrow-tip {
+    position: absolute;
+    z-index: 6;
+    width: min(19rem, 42vw);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.8rem 0.95rem;
+    border-radius: 12px;
+    background: rgba(28, 17, 9, 0.94);
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
+    pointer-events: none;
+    font-size: 0.86rem;
+    line-height: 1.45;
+  }
+
+  .burrow-tip strong {
+    font-size: 1rem;
+  }
+
+  .burrow-tip .tip-meta {
+    color: var(--amber);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+  }
+
+  .burrow-tip .tip-sum {
+    color: var(--text-dim);
+  }
+
+  .burrow-tip .tip-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.15rem;
+  }
+
+  .burrow-tip .tip-tech em {
+    font-style: normal;
+    font-size: 0.7rem;
+    padding: 0.08rem 0.45rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--mint);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+</style>
+
+<style>
+  /* ---------- header ---------- */
+
+  .top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.1rem 1.6rem;
+    pointer-events: none;
+  }
+
+  .top a {
+    pointer-events: auto;
+  }
+
+  .brand {
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #4a2f1a;
+  }
+
+  .top nav {
+    display: flex;
+    gap: 1.3rem;
+    font-size: 0.92rem;
+  }
+
+  .top nav a {
+    color: #6b4a2c;
+  }
+
+  .top nav a:hover {
+    color: #2f1d0e;
+  }
+
+  /* ---------- hero ---------- */
+
+  #burrow {
+    position: relative;
+    background: #bfe3ef;
+  }
+
+  .hero-copy {
+    position: absolute;
+    top: 4.4%;
+    left: 4%;
+    z-index: 10;
+    max-width: 30rem;
+    color: #3c2513;
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(1.8rem, 4.4vw, 4.2rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: #2f1d0e;
+  }
+
+  .tagline {
+    font-size: clamp(0.85rem, 1.55vw, 1.5rem);
+    color: #6b4a2c;
+    margin-top: 0.3em;
+  }
+
+  .blurb {
+    font-size: clamp(0.7rem, 1.02vw, 1rem);
+    color: #7a5836;
+    margin-top: 0.8em;
+    max-width: 25rem;
+  }
+
+  .hero-actions {
+    position: absolute;
+    top: 19.4%;
+    left: 4%;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+  }
+
+  .skip {
+    display: inline-block;
+    font-size: clamp(0.65rem, 0.95vw, 0.9rem);
+    color: var(--cream);
+    border: 1px solid rgba(253, 243, 226, 0.28);
+    border-radius: 999px;
+    padding: 0.35em 1em;
+    background: rgba(43, 23, 12, 0.6);
+  }
+
+  .skip:hover {
+    background: rgba(43, 23, 12, 0.9);
+    border-color: var(--amber);
+    text-decoration: none;
+  }
+
+  .dig-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    font-size: clamp(0.6rem, 0.95vw, 0.9rem);
+    color: var(--cream);
+    background: rgba(43, 23, 12, 0.6);
+    border: 1px solid rgba(253, 243, 226, 0.18);
+    border-radius: 999px;
+    padding: 0.35em 1em;
+  }
+
+  .dig-hint span {
+    color: var(--amber);
+  }
+
+  .noscript-hero {
+    display: grid;
+    place-content: center;
+    gap: 0.6rem;
+    text-align: center;
+    min-height: 60vh;
+    background: var(--bg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dig-hint {
+      display: none;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .blurb,
+    .dig-hint {
+      display: none;
+    }
+
+    /* the scene is short at this width — keep the copy clear of the nav */
+    .hero-copy {
+      top: 9.5%;
+    }
+
+    .hero-actions {
+      top: 20.5%;
+    }
+  }
+
+  /* ---------- main content ---------- */
+
+  main {
+    max-width: 68rem;
+    margin: 0 auto;
+    padding: 4.5rem 1.4rem 2rem;
+  }
+
+  h2 {
+    font-size: 1.9rem;
+    margin-bottom: 0.6rem;
+    color: var(--cream);
+  }
+
+  .section-lede {
+    color: var(--text-dim);
+    margin-bottom: 2rem;
+    max-width: 44rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.4rem;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.3rem 1.35rem;
+    position: relative;
+    overflow: hidden;
+    transition:
+      transform 0.16s ease,
+      border-color 0.16s ease,
+      box-shadow 0.16s ease;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: var(--gem);
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--gem) 55%, var(--border));
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+
+  .card h3 {
+    font-size: 1.18rem;
+  }
+
+  .card h3 a {
+    color: var(--text);
+  }
+
+  .card h3 a:hover {
+    color: var(--gem);
+    text-decoration: none;
+  }
+
+  .star {
+    color: var(--amber);
+    font-size: 0.95rem;
+  }
+
+  .chamber-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+
+  .gem {
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    transform: rotate(45deg);
+    background: var(--gem);
+    box-shadow: 0 0 10px var(--gem);
+  }
+
+  .summary {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    flex: 1;
+  }
+
+  .tech-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+  }
+
+  .tech-list li {
+    font-size: 0.76rem;
+    padding: 0.14rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--mint);
+    background: rgba(127, 211, 195, 0.07);
+  }
+
+  .card-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.9rem;
+    font-size: 0.87rem;
+    margin-top: 0.2rem;
+  }
+
+  .badge {
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    border: 1px dashed var(--border);
+    border-radius: 999px;
+    padding: 0.12rem 0.65rem;
+  }
+
+  .more {
+    margin-left: auto;
+    color: var(--clay);
+  }
+
+  /* ---------- about ---------- */
+
+  #about {
+    margin-top: 4.5rem;
+    max-width: 46rem;
+  }
+
+  #about p {
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+  }
+
+  .contact {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* ---------- footer ---------- */
+
+  footer {
+    border-top: 1px solid var(--border);
+    margin-top: 3.5rem;
+    padding: 1.6rem 1.4rem 2rem;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+  }
+</style>
