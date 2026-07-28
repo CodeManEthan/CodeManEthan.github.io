@@ -1,0 +1,768 @@
+---
+import { getCollection } from 'astro:content';
+import OrbitalScene from '../../components/designs/orbital/OrbitalScene';
+import { LOC, GEM_COLORS, fmtLoc } from '../../data/islands';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+// Serializable prop for the 3D scene — one docked module per project, in the
+// same order as the cards below. Module size is derived from `loc`.
+const modules = projects.map((p) => ({
+  id: p.id,
+  title: p.data.title,
+  tech: p.data.tech,
+  loc: LOC[p.id] ?? 2000,
+  featured: p.data.featured,
+}));
+
+const totalLoc = modules.reduce((n, m) => n + m.loc, 0);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Ethan — software engineer & agentic engineer. An orbital yard where every docked module is a project, sized by its real codebase, and the drones never stop working."
+    />
+    <title>Ethan · Software &amp; Agentic Engineer — Orbital Yard</title>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="/">CodeManEthan</a>
+      <nav>
+        <a href="#projects">Projects</a>
+        <a href="#about">About</a>
+        <a href="https://github.com/CodeManEthan" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </header>
+
+    <section class="hero" aria-label="Orbital station — one module per project">
+      <div class="hero-canvas">
+        <OrbitalScene client:only="react" projects={modules} />
+      </div>
+
+      <div class="hero-text">
+        <p class="kicker">Orbital Yard · Station CME-1</p>
+        <h1>Hi, I'm Ethan.</h1>
+        <p class="tagline">
+          Software engineer &amp; agentic engineer. Every module docked to this
+          station is one of my projects, sized by its real codebase — and Bay 08
+          is still being welded, because the yard is never finished.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#projects">Explore my work</a>
+          <a class="btn" href="mailto:codemanethan@gmail.com">Say hello</a>
+        </div>
+        <dl class="stats">
+          <div>
+            <dt>Modules</dt>
+            <dd>{modules.length}</dd>
+          </div>
+          <div>
+            <dt>Lines in orbit</dt>
+            <dd>{fmtLoc(totalLoc)}</dd>
+          </div>
+          <div>
+            <dt>Bays building</dt>
+            <dd>1</dd>
+          </div>
+        </dl>
+      </div>
+
+      <p class="hero-hint" aria-hidden="true">
+        drag to orbit · scroll to zoom · hover a module for its stats · click to
+        board it
+      </p>
+
+      <a class="skip" href="#projects">Skip to the project list ↓</a>
+
+      <noscript>
+        <div class="noscript-hero">
+          <h2>Ethan — software &amp; agentic engineer</h2>
+          <p>
+            The station needs JavaScript to fly. The full project list is right
+            below, no WebGL required.
+          </p>
+          <a class="btn primary" href="#projects">View projects ↓</a>
+        </div>
+      </noscript>
+    </section>
+
+    <main>
+      <section id="projects">
+        <h2>Eight bays, seven projects</h2>
+        <p class="section-sub">
+          Each module above is one of these — a bigger repo gets a bigger hull,
+          brighter running lights and more drone traffic. Hover one up there for
+          its stats, or read the manifest down here.
+        </p>
+
+        <div class="grid">
+          {
+            projects.map((p, i) => {
+              const loc = LOC[p.id] ?? 2000;
+              const detailUrl = `/projects/${p.id}/`;
+              return (
+                <article
+                  class={`card${p.data.featured ? ' featured' : ''}`}
+                  style={`--accent: ${GEM_COLORS[i % GEM_COLORS.length]}`}
+                >
+                  <div class="card-top">
+                    <span class="slot">{`Module ${String(i + 1).padStart(2, '0')}`}</span>
+                    {p.data.featured && <span class="badge">Featured</span>}
+                  </div>
+                  <h3>
+                    <a href={detailUrl}>{p.data.title}</a>
+                  </h3>
+                  <p class="summary">{p.data.summary}</p>
+                  <p class="size-line">
+                    <span class="bar" style={`--fill: ${Math.round((loc / 67732) * 100)}%`} />
+                    {`${fmtLoc(loc)} lines`}
+                  </p>
+                  <ul class="tech">
+                    {p.data.tech.map((t) => (
+                      <li>{t}</li>
+                    ))}
+                  </ul>
+                  <div class="card-links">
+                    <a class="more" href={detailUrl}>
+                      View project →
+                    </a>
+                    {p.data.status === 'public' && p.data.repo && (
+                      <a class="repo" href={p.data.repo} target="_blank" rel="noopener">
+                        Source ↗
+                      </a>
+                    )}
+                    {p.data.status === 'private' && (
+                      <span class="status private">Source private · demo on request</span>
+                    )}
+                    {p.data.status === 'soon' && <span class="status soon">Repo coming soon</span>}
+                    {p.data.demo && (
+                      <a class="repo" href={p.data.demo} target="_blank" rel="noopener">
+                        Live demo ↗
+                      </a>
+                    )}
+                  </div>
+                </article>
+              );
+            })
+          }
+
+          <article class="card building">
+            <div class="card-top">
+              <span class="slot">Bay 08</span>
+              <span class="badge">Under construction</span>
+            </div>
+            <h3>The next one</h3>
+            <p class="summary">
+              Frame is up, hull plate is going on. There's always a module half
+              built up there — when the next project lands, this bay closes out
+              and a new frame goes up behind it.
+            </p>
+            <p class="size-line"><span class="bar" style="--fill: 38%" />in progress</p>
+            <ul class="tech">
+              <li>Agents</li>
+              <li>World state</li>
+              <li>Coming soon</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section id="about">
+        <h2>Who's in the command module</h2>
+        <p>
+          I'm Ethan. I work across the stack — Python and Flask on the backend,
+          React and TypeScript on the front, Flutter for cross-platform apps, and
+          Bash where it counts. Lately my focus is agentic engineering: building
+          the durable plumbing that lets AI agents communicate and get real work
+          done.
+        </p>
+        <p>
+          This page is one of the projects too. It's a static Astro site with a
+          single React island rendering a low-poly station in Three.js:
+          shared geometry, ref-based animation, no per-frame allocation, and a
+          drone crew that keeps working whether or not anyone is watching.
+          Prefer things still? It honours <code>prefers-reduced-motion</code>,
+          and the manifest above is the same content with no WebGL at all.
+        </p>
+        <div class="about-actions">
+          <a class="btn primary" href="mailto:codemanethan@gmail.com">codemanethan@gmail.com</a>
+          <a class="btn" href="https://github.com/CodeManEthan" target="_blank" rel="noopener">
+            github.com/CodeManEthan
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>© {new Date().getFullYear()} Ethan · Built with Astro, React &amp; Three.js</p>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  astro-island {
+    display: contents;
+  }
+</style>
+
+<style>
+  :root {
+    --space: #0b0f2c;
+    --space-2: #121738;
+    --panel: rgba(21, 27, 63, 0.72);
+    --card: #151b3f;
+    --ink: #edf0ff;
+    --ink-soft: #a4addb;
+    --ink-dim: #7d87b8;
+    --border: #2a3268;
+    --cyan: #7ee0e6;
+    --amber: #f5c26b;
+    --violet: #9b8fe8;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background: var(--space);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    margin: 0;
+    background: var(--space);
+    color: var(--ink);
+    font-family:
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      'Helvetica Neue',
+      sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  code {
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    font-size: 0.88em;
+    color: var(--cyan);
+    background: rgba(126, 224, 230, 0.09);
+    border-radius: 5px;
+    padding: 0.05em 0.35em;
+  }
+
+  /* -------------------------------- top bar ------------------------------- */
+
+  .topbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem clamp(1.2rem, 4vw, 3rem);
+    pointer-events: none;
+  }
+
+  .topbar a {
+    pointer-events: auto;
+  }
+
+  .wordmark {
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
+  }
+
+  .topbar nav {
+    display: flex;
+    gap: 1.4rem;
+  }
+
+  .topbar nav a {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    transition: color 0.15s ease;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+  }
+
+  .topbar nav a:hover {
+    color: var(--cyan);
+  }
+
+  /* --------------------------------- hero --------------------------------- */
+
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse at 25% 15%, rgba(103, 86, 190, 0.28), transparent 58%),
+      radial-gradient(ellipse at 82% 82%, rgba(43, 122, 150, 0.22), transparent 55%),
+      linear-gradient(180deg, #0a0d28 0%, #141a3d 55%, #0d1130 100%);
+  }
+
+  .hero-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .hero-text {
+    position: relative;
+    z-index: 3;
+    max-width: 27.5rem;
+    margin-left: clamp(1.2rem, 6vw, 5rem);
+    padding: 1.6rem 1.8rem;
+    background: var(--panel);
+    border: 1px solid rgba(140, 160, 255, 0.22);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    pointer-events: none;
+  }
+
+  .hero-text a {
+    pointer-events: auto;
+  }
+
+  .kicker {
+    margin: 0 0 0.35rem;
+    font-size: 0.74rem;
+    font-weight: 750;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cyan);
+  }
+
+  h1 {
+    margin: 0 0 0.6rem;
+    font-size: clamp(2.1rem, 5.5vw, 3.05rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .tagline {
+    margin: 0 0 1.35rem;
+    color: var(--ink-soft);
+    font-size: 1.0rem;
+  }
+
+  .hero-actions,
+  .about-actions {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.58rem 1.2rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--ink);
+    font-weight: 650;
+    font-size: 0.92rem;
+    transition:
+      transform 0.15s ease,
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    border-color: var(--cyan);
+    box-shadow: 0 8px 24px rgba(126, 224, 230, 0.18);
+  }
+
+  .btn.primary {
+    background: var(--cyan);
+    border-color: var(--cyan);
+    color: #06232a;
+  }
+
+  .btn.primary:hover {
+    box-shadow: 0 8px 26px rgba(126, 224, 230, 0.35);
+  }
+
+  .stats {
+    display: flex;
+    gap: 1.6rem;
+    margin: 1.5rem 0 0;
+    padding-top: 1.1rem;
+    border-top: 1px solid rgba(140, 160, 255, 0.16);
+  }
+
+  .stats div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stats dt {
+    order: 2;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .stats dd {
+    order: 1;
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 750;
+    line-height: 1.1;
+    color: var(--amber);
+  }
+
+  .hero-hint {
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    bottom: 3.4rem;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    background: rgba(11, 15, 44, 0.6);
+    border: 1px solid rgba(140, 160, 255, 0.14);
+    color: var(--ink-dim);
+    font-size: 0.78rem;
+    font-weight: 550;
+    pointer-events: none;
+    white-space: nowrap;
+    backdrop-filter: blur(6px);
+  }
+
+  .skip {
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    bottom: 1rem;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.3rem 0.9rem;
+    background: rgba(11, 15, 44, 0.7);
+    backdrop-filter: blur(6px);
+  }
+
+  .skip:hover {
+    color: var(--cyan);
+    border-color: var(--cyan);
+  }
+
+  .noscript-hero {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    gap: 0.9rem;
+    background: rgba(11, 15, 44, 0.92);
+    padding: 2rem;
+  }
+
+  .noscript-hero h2 {
+    margin: 0;
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+  }
+
+  .noscript-hero p {
+    margin: 0;
+    color: var(--ink-soft);
+  }
+
+  .noscript-hero a {
+    justify-self: center;
+  }
+
+  /* ------------------------------- sections ------------------------------- */
+
+  main {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 clamp(1.2rem, 4vw, 3rem);
+  }
+
+  h2 {
+    margin: 4.5rem 0 0.4rem;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    letter-spacing: -0.01em;
+  }
+
+  .section-sub {
+    margin: 0 0 2rem;
+    color: var(--ink-soft);
+    max-width: 42rem;
+  }
+
+  /* -------------------------------- cards --------------------------------- */
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1.3rem;
+  }
+
+  .card {
+    --accent: var(--violet);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    background: linear-gradient(180deg, var(--card), #11163a);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.25rem 1.35rem 1.15rem;
+    position: relative;
+    overflow: hidden;
+    transition:
+      transform 0.18s ease,
+      border-color 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: var(--accent);
+    opacity: 0.55;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  }
+
+  .card:hover::before {
+    opacity: 1;
+  }
+
+  .card.building {
+    --accent: var(--amber);
+    border-style: dashed;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .slot {
+    font-size: 0.68rem;
+    font-weight: 750;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .badge {
+    margin-left: auto;
+    font-size: 0.64rem;
+    font-weight: 750;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--accent) 80%, white);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    border-radius: 999px;
+    padding: 0.16rem 0.55rem;
+  }
+
+  .card h3 {
+    margin: 0;
+    font-size: 1.14rem;
+    line-height: 1.3;
+  }
+
+  .card h3 a:hover {
+    color: var(--accent);
+  }
+
+  .summary {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.93rem;
+    flex-grow: 1;
+  }
+
+  .size-line {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0.2rem 0 0;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .bar {
+    flex: 1;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.07);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bar::after {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--fill);
+    background: var(--accent);
+    border-radius: 999px;
+    box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+
+  .tech {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .tech li {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.14rem 0.55rem;
+  }
+
+  .card-links {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+  }
+
+  .more {
+    font-weight: 700;
+  }
+
+  .more:hover {
+    color: var(--accent);
+  }
+
+  .repo {
+    font-weight: 650;
+    color: var(--cyan);
+  }
+
+  .repo:hover {
+    text-decoration: underline;
+  }
+
+  .status {
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--ink-dim);
+    border: 1px dashed var(--border);
+    border-radius: 999px;
+    padding: 0.14rem 0.6rem;
+  }
+
+  /* -------------------------------- about --------------------------------- */
+
+  #about p {
+    max-width: 44rem;
+    color: var(--ink-soft);
+    margin: 0 0 1rem;
+  }
+
+  .about-actions {
+    margin-top: 1.4rem;
+  }
+
+  /* ------------------------------- footer --------------------------------- */
+
+  footer {
+    margin-top: 5rem;
+    padding: 2rem clamp(1.2rem, 4vw, 3rem);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--ink-dim);
+    font-size: 0.85rem;
+  }
+
+  footer p {
+    margin: 0;
+  }
+
+  /* ------------------------------ responsive ------------------------------ */
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn:hover,
+    .card:hover {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .hero {
+      align-items: flex-end;
+      padding-bottom: 5rem;
+    }
+
+    .hero-text {
+      margin: 0 1rem 1rem;
+      padding: 1.2rem 1.3rem;
+    }
+
+    .hero-hint {
+      display: none;
+    }
+
+    .topbar nav {
+      gap: 1rem;
+    }
+  }
+</style>
