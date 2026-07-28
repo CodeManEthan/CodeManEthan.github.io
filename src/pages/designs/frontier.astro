@@ -1,0 +1,1056 @@
+---
+import { getCollection } from 'astro:content';
+import FrontierWorld from '../../components/designs/frontier/FrontierWorld';
+import { LOC, GEM_COLORS, fmtLoc, sizeLabel } from '../../data/islands';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+// One building per project. The scene sizes each from `loc` and tints it with
+// the gem colour that matches its card below.
+const plots = projects.map((p, i) => ({
+  id: p.id,
+  title: p.data.title,
+  tech: p.data.tech,
+  status: p.data.status,
+  featured: p.data.featured,
+  loc: LOC[p.id] ?? 2000,
+  accent: GEM_COLORS[i % GEM_COLORS.length],
+}));
+
+const buildingSize = (n: number) => sizeLabel(n).replace('island', 'building');
+
+// Mirrors the `state` field in worldstate.ts so the plain list tells the same
+// story as the village. Keep the two in step when a building's state changes.
+const STATE: Record<string, { word: string; note: string }> = {
+  'finance-tracker': { word: 'active', note: 'lit windows, smoke on the chimney' },
+  'one-record-many-bells': { word: 'active', note: 'the bell tower on the plaza' },
+  kdoitall: { word: 'active', note: 'lit windows, smoke on the chimney' },
+  'project-hub': { word: 'growing', note: 'scaffolding up, a storey going on' },
+  'pdf-merger': { word: 'growing', note: 'new wing half-planked' },
+  'war-card-game': { word: 'resting', note: 'moss and ivy, one lamp still lit' },
+  'montage-it': { word: 'growing', note: 'the frame at the frontier' },
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Ethan — software engineer & agentic engineer. A pixel-art frontier hamlet where every building is a project, sized by its real codebase and lit, scaffolded or mossy according to how the repo is doing. Scroll to take the tour."
+    />
+    <title>Ethan · Software &amp; Agentic Engineer — Hamlet Frontier</title>
+  </head>
+  <body>
+    <a class="skip-sr" href="#projects">Skip to the project list</a>
+
+    <header class="topbar">
+      <a class="wordmark" href="/">CodeManEthan</a>
+      <nav aria-label="Primary">
+        <a href="#projects">Projects</a>
+        <a href="#about">About</a>
+        <a href="https://github.com/CodeManEthan" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+      <a class="skip-pill" href="#projects">Skip to the project list ↓</a>
+    </header>
+
+    <!-- The tour. Page scroll drives the camera; the island sets the exact
+         height from its own waypoint count on mount. -->
+    <section class="fr-tour" aria-label="A guided tour of Ethan's frontier hamlet">
+      <div class="fr-stage">
+        <FrontierWorld client:only="react" projects={plots} />
+
+        <div class="fr-hero">
+          <p class="kicker">The road in from the west</p>
+          <h1>Hi, I&rsquo;m Ethan.</h1>
+          <p class="tagline">
+            Software engineer &amp; agentic engineer. Every building along this
+            road is one of my projects — sized by its real codebase, and lit,
+            scaffolded or mossy depending on how the repo is actually doing.
+          </p>
+          <p class="scroll-cue">Scroll to walk the village &darr;</p>
+        </div>
+
+        <noscript>
+          <div class="noscript">
+            <p>
+              The village needs JavaScript to render. Every project is listed in
+              plain form below.
+            </p>
+          </div>
+        </noscript>
+      </div>
+    </section>
+
+    <main>
+      <section id="projects" class="projects">
+        <h2>Seven buildings, seven projects</h2>
+        <p class="section-sub">
+          Bigger codebase, bigger building — footprints scale by the cube root
+          of each repo&rsquo;s line count, so a 68k-line app is about twice the
+          size of a 1.7k-line one instead of forty times. What the building is
+          <em>doing</em> comes from its state: active houses have lit windows and
+          smoke, growing ones are wrapped in scaffolding with a storey going on,
+          resting ones wear moss and ivy. Same content as the tour, no canvas
+          required.
+        </p>
+        <div class="grid">
+          {
+            projects.map((p, i) => (
+              <article
+                class={`card${p.data.featured ? ' featured' : ''}`}
+                style={`--gem: ${GEM_COLORS[i % GEM_COLORS.length]}`}
+              >
+                <div class="card-top">
+                  <span class="gem-dot" aria-hidden="true" />
+                  <h3>
+                    <a href={`/projects/${p.id}/`}>{p.data.title}</a>
+                  </h3>
+                  {p.data.featured && <span class="badge">Featured</span>}
+                </div>
+                <p class="summary">{p.data.summary}</p>
+                <p class="size-line">
+                  {`${fmtLoc(LOC[p.id] ?? 2000)} lines · ${buildingSize(LOC[p.id] ?? 2000)}`}
+                </p>
+                {STATE[p.id] && (
+                  <p class={`state-line st-${STATE[p.id].word}`}>
+                    <span class="state-dot" aria-hidden="true" />
+                    {STATE[p.id].word} — {STATE[p.id].note}
+                  </p>
+                )}
+                <ul class="tech">
+                  {p.data.tech.map((t) => (
+                    <li>{t}</li>
+                  ))}
+                </ul>
+                <div class="card-links">
+                  <a class="more" href={`/projects/${p.id}/`}>
+                    View project →
+                  </a>
+                  {p.data.status === 'public' && p.data.repo && (
+                    <a class="repo" href={p.data.repo} target="_blank" rel="noopener">
+                      Source ↗
+                    </a>
+                  )}
+                  {p.data.status === 'private' && (
+                    <span class="status">Source private · demo on request</span>
+                  )}
+                  {p.data.status === 'soon' && <span class="status">Repo coming soon</span>}
+                  {p.data.demo && (
+                    <a class="repo" href={p.data.demo} target="_blank" rel="noopener">
+                      Live demo ↗
+                    </a>
+                  )}
+                </div>
+              </article>
+            ))
+          }
+        </div>
+
+        <article class="card plot-card">
+          <div class="card-top">
+            <span class="gem-dot" aria-hidden="true" />
+            <h3>Plot 8 — unclaimed</h3>
+          </div>
+          <p class="summary">
+            Surveyed, staked and string-lined at the far end of the road.
+            Nothing has been committed to it yet.
+          </p>
+          <p class="state-line st-planned">
+            <span class="state-dot" aria-hidden="true" />
+            planned — corner stakes and a survey sign
+          </p>
+        </article>
+      </section>
+
+      <section id="about" class="about">
+        <h2>The workshop on the plaza</h2>
+        <p>
+          I&rsquo;m Ethan — a software engineer and agentic engineer. I work
+          across the stack: Python and Flask on the backend, React and
+          TypeScript on the front, Bash and desktop automation where it counts.
+          Lately my focus is agent infrastructure — the durable plumbing that
+          lets AI agents talk to each other and get work done. The bell tower on
+          the plaza is that work: <em>One Record, Many Bells</em> separates the
+          message from the notification, so the bell can be missed and the record
+          still stands. It seemed only fair to let it ring.
+        </p>
+        <p>
+          The hamlet is drawn from scratch: no game engine, no sprite sheets, no
+          3D. Every roof, villager and lamp post is rasterised into a buffer half
+          the width of your screen and scaled back up in whole-pixel steps, which
+          is why the edges stay hard. The village itself is not hard-coded into
+          the renderer — it is one plain, serializable world-state object
+          (terrain, road, buildings with their state and progress, entities, and
+          the notice board&rsquo;s build log). The renderer only reads it, so
+          changing a building from <em>resting</em> to <em>growing</em> is a
+          one-field edit, and the whole world can eventually be a committed file
+          that scheduled agents diff and evolve.
+        </p>
+        <div class="about-actions">
+          <a class="btn primary" href="mailto:codemanethan@gmail.com">
+            codemanethan@gmail.com
+          </a>
+          <a class="btn" href="https://github.com/CodeManEthan" target="_blank" rel="noopener">
+            github.com/CodeManEthan
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>© {new Date().getFullYear()} Ethan · Built with Astro, React &amp; a 2D canvas</p>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  /* ------- the canvas island's own chrome (React markup, so global) ------ */
+
+  .fr-wrap {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .fr-canvas {
+    position: absolute;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    display: block;
+  }
+
+  .fr-hits {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+  }
+
+  .fr-hit {
+    position: absolute;
+    display: block;
+    border-radius: 8px;
+    cursor: pointer;
+    outline-offset: 3px;
+  }
+
+  /* Off-camera buildings: invisible and unclickable, but still in the tab
+     order — focusing one scrolls its beat of the tour into view. */
+  .fr-hit.is-parked {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .fr-hit:focus-visible {
+    outline: 3px solid #fffdf6;
+    box-shadow: 0 0 0 6px rgba(70, 61, 92, 0.5);
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .fr-sr,
+  .skip-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .skip-sr:focus {
+    z-index: 40;
+    top: 0.6rem;
+    left: 0.6rem;
+    width: auto;
+    height: auto;
+    clip: auto;
+    clip-path: none;
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    background: #fffdf6;
+    border: 2px solid #463d5c;
+    font-weight: 700;
+  }
+
+  .fr-tags {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .fr-tag {
+    position: absolute;
+    transform: translate(-50%, 0);
+    padding: 0.08rem 0.5rem;
+    border-radius: 999px;
+    background: rgba(255, 253, 246, 0.86);
+    border: 1px solid rgba(70, 61, 92, 0.28);
+    color: #463d5c;
+    font-size: 0.63rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(70, 61, 92, 0.14);
+  }
+
+  .fr-tip {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    transform: translate(-50%, calc(-100% - 12px));
+    min-width: 10rem;
+    max-width: 17rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.14rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 253, 246, 0.97);
+    border: 2px solid #463d5c;
+    border-radius: 10px;
+    box-shadow: 0 10px 26px rgba(70, 61, 92, 0.22);
+    pointer-events: none;
+    z-index: 7;
+  }
+
+  .fr-tip[data-below='1'] {
+    transform: translate(-50%, 0);
+  }
+
+  .fr-tip strong {
+    font-size: 0.94rem;
+    line-height: 1.25;
+  }
+
+  .fr-tip-meta {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #7a7290;
+    letter-spacing: 0.01em;
+  }
+
+  .fr-tip-blurb {
+    font-size: 0.74rem;
+    color: #5f5878;
+    line-height: 1.35;
+  }
+
+  .fr-tip-tech {
+    font-size: 0.67rem;
+    color: #9a93ad;
+    line-height: 1.35;
+  }
+
+  .fr-log {
+    max-width: 21rem;
+    border-color: #b98d33;
+    background: #fdf6e6;
+  }
+
+  .fr-log ul {
+    margin: 0.3rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.22rem;
+  }
+
+  .fr-log li {
+    font-size: 0.73rem;
+    line-height: 1.3;
+    color: #5f5878;
+    border-top: 1px dashed rgba(70, 61, 92, 0.18);
+    padding-top: 0.22rem;
+  }
+
+  .fr-log li b {
+    display: inline-block;
+    min-width: 2.1rem;
+    color: #b98d33;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.66rem;
+  }
+
+  /* ---- beat caption ---- */
+
+  .fr-caption {
+    position: absolute;
+    left: clamp(1.1rem, 4vw, 3rem);
+    bottom: 5.4rem;
+    z-index: 5;
+    max-width: 25rem;
+    padding: 0.7rem 0.95rem;
+    border-radius: 12px;
+    background: rgba(255, 253, 246, 0.9);
+    border: 2px solid rgba(70, 61, 92, 0.16);
+    box-shadow: 0 8px 24px rgba(70, 61, 92, 0.13);
+    opacity: var(--fr-cap, 1);
+    pointer-events: none;
+  }
+
+  .fr-cap-label {
+    margin: 0 0 0.15rem;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #2f8f74;
+  }
+
+  .fr-cap-text {
+    margin: 0;
+    font-size: 0.86rem;
+    line-height: 1.45;
+    color: #514a69;
+  }
+
+  /* ---- waypoint strip: a little road-map of the tour ---- */
+
+  .fr-strip {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 1.5rem;
+    z-index: 6;
+    width: min(46rem, 82vw);
+    height: 2.4rem;
+  }
+
+  .fr-strip-road {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0.55rem;
+    height: 4px;
+    border-radius: 2px;
+    background: repeating-linear-gradient(
+      90deg,
+      rgba(216, 172, 125, 0.95) 0 10px,
+      rgba(185, 138, 94, 0.95) 10px 16px
+    );
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+
+  .fr-strip-marker {
+    position: absolute;
+    top: 0.15rem;
+    width: 10px;
+    height: 10px;
+    margin-left: -5px;
+    border-radius: 50%;
+    background: #463d5c;
+    border: 2px solid #fffdf6;
+    box-shadow: 0 1px 4px rgba(70, 61, 92, 0.4);
+    transition: none;
+  }
+
+  .fr-dot {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+  }
+
+  .fr-dot::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0.35rem;
+    width: 9px;
+    height: 9px;
+    margin-left: -4.5px;
+    border-radius: 50%;
+    background: #fffdf6;
+    border: 2px solid rgba(70, 61, 92, 0.45);
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+
+  .fr-dot:hover::before,
+  .fr-dot:focus-visible::before {
+    background: #f0c75e;
+    transform: scale(1.25);
+  }
+
+  .fr-dot.is-on::before {
+    background: #63c9a8;
+    border-color: #463d5c;
+  }
+
+  .fr-dot-label {
+    position: absolute;
+    top: 1.35rem;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #5f5878;
+    text-shadow: 0 1px 0 rgba(255, 253, 246, 0.9);
+  }
+
+  .fr-dot.is-on .fr-dot-label {
+    color: #2f8f74;
+  }
+
+  @media (max-width: 760px) {
+    .fr-caption {
+      left: 0.7rem;
+      right: 0.7rem;
+      bottom: 5rem;
+      max-width: none;
+      padding: 0.55rem 0.75rem;
+    }
+
+    .fr-cap-text {
+      font-size: 0.78rem;
+    }
+
+    .fr-strip {
+      width: 90vw;
+    }
+
+    .fr-dot-label {
+      display: none;
+    }
+
+    .fr-tag {
+      font-size: 0.55rem;
+      padding: 0.05rem 0.35rem;
+    }
+
+    .fr-tip {
+      max-width: 13rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fr-dot::before {
+      transition: none;
+    }
+  }
+</style>
+
+<style>
+  :root {
+    --cream: #fdf7ec;
+    --card: #fffdf8;
+    --ink: #463d5c;
+    --ink-soft: #7a7290;
+    --border: #ebe0cd;
+    --mint: #63c9a8;
+    --honey: #f0c75e;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background: var(--cream);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family:
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      'Helvetica Neue',
+      sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* ------------------------------- top bar ------------------------------ */
+
+  .topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem clamp(0.9rem, 4vw, 3rem);
+    background: linear-gradient(
+      180deg,
+      rgba(253, 247, 236, 0.97) 0%,
+      rgba(253, 247, 236, 0.93) 62%,
+      rgba(253, 247, 236, 0) 100%
+    );
+  }
+
+  .wordmark {
+    font-weight: 800;
+    font-size: 1.02rem;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+  }
+
+  .topbar nav {
+    display: flex;
+    gap: 1.2rem;
+    margin-left: auto;
+  }
+
+  .topbar nav a {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+    transition: color 0.15s ease;
+  }
+
+  .topbar nav a:hover {
+    color: var(--ink);
+  }
+
+  .skip-pill {
+    padding: 0.32rem 0.85rem;
+    border-radius: 999px;
+    border: 2px solid var(--ink);
+    background: var(--honey);
+    color: #4a3a12;
+    font-size: 0.78rem;
+    font-weight: 800;
+    white-space: nowrap;
+    box-shadow: 0 2px 0 rgba(70, 61, 92, 0.3);
+  }
+
+  .skip-pill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 0 rgba(70, 61, 92, 0.3);
+  }
+
+  /* -------------------------------- tour -------------------------------- */
+
+  .fr-tour {
+    position: relative;
+    /* Overridden by the island from its own waypoint count on mount. */
+    height: calc(100svh + 525svh);
+  }
+
+  .fr-stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+    background: linear-gradient(
+      180deg,
+      #8fcfe9 0%,
+      #bfe1ea 20%,
+      #fbe6c4 30%,
+      #82c99b 30%,
+      #79bf90 100%
+    );
+  }
+
+  .fr-hero {
+    position: absolute;
+    z-index: 4;
+    top: clamp(4.2rem, 12vh, 7rem);
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(38rem, 92vw);
+    padding: 1.6rem 2rem 1.4rem;
+    text-align: center;
+    opacity: var(--fr-hero, 1);
+    pointer-events: none;
+    /* A soft scrim so the copy reads over the village without hiding it. */
+    background: radial-gradient(
+      ellipse 62% 68% at 50% 45%,
+      rgba(253, 247, 236, 0.92) 0%,
+      rgba(253, 247, 236, 0.74) 46%,
+      rgba(253, 247, 236, 0) 78%
+    );
+  }
+
+  :global(html[data-fr-hero='off']) .fr-hero {
+    visibility: hidden;
+  }
+
+  .kicker {
+    margin: 0 0 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #2f8f74;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  h1 {
+    margin: 0 0 0.45rem;
+    font-size: clamp(2rem, 5.4vw, 3rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 0 rgba(255, 255, 255, 0.65);
+  }
+
+  .tagline {
+    margin: 0 auto 0.9rem;
+    max-width: 31rem;
+    color: #56506f;
+    font-size: 0.98rem;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  .scroll-cue {
+    margin: 0;
+    display: inline-block;
+    padding: 0.28rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(255, 253, 246, 0.75);
+    border: 1px solid rgba(70, 61, 92, 0.16);
+    color: var(--ink-soft);
+    font-size: 0.76rem;
+    font-weight: 700;
+  }
+
+  .noscript {
+    position: absolute;
+    inset: auto 1rem 45% 1rem;
+    z-index: 5;
+    text-align: center;
+    color: var(--ink-soft);
+  }
+
+  @media (max-height: 720px) {
+    .fr-hero {
+      top: 3.6rem;
+    }
+
+    h1 {
+      font-size: clamp(1.7rem, 4.4vw, 2.3rem);
+    }
+
+    .tagline {
+      font-size: 0.9rem;
+      margin-bottom: 0.6rem;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .topbar nav {
+      gap: 0.85rem;
+      font-size: 0.84rem;
+    }
+
+    .topbar nav a {
+      font-size: 0.82rem;
+    }
+
+    .skip-pill {
+      font-size: 0.7rem;
+      padding: 0.28rem 0.6rem;
+    }
+
+    .wordmark {
+      font-size: 0.92rem;
+    }
+  }
+
+  @media (max-width: 460px) {
+    .topbar {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .topbar nav {
+      order: 3;
+      margin-left: 0;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .skip-pill {
+      margin-left: auto;
+    }
+
+    .fr-hero {
+      top: 6.2rem;
+      padding: 1rem 1.1rem;
+    }
+
+    .tagline {
+      font-size: 0.86rem;
+    }
+  }
+
+  /* -------------------------------- main -------------------------------- */
+
+  main {
+    position: relative;
+    z-index: 10;
+    max-width: 68rem;
+    margin: 0 auto;
+    padding: 4.5rem 1.4rem 2rem;
+    background: var(--cream);
+  }
+
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    letter-spacing: -0.01em;
+  }
+
+  .section-sub {
+    margin: 0 0 2rem;
+    max-width: 46rem;
+    color: var(--ink-soft);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1.3rem;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 1.2rem 1.3rem;
+    transition:
+      transform 0.16s ease,
+      border-color 0.16s ease,
+      box-shadow 0.16s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: var(--gem, var(--honey));
+    box-shadow: 0 10px 26px rgba(70, 61, 92, 0.1);
+  }
+
+  .card.featured {
+    border-color: color-mix(in srgb, var(--gem) 45%, var(--border));
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .gem-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    background: var(--gem, #9b8fe8);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--gem, #9b8fe8) 25%, transparent);
+    flex: none;
+  }
+
+  .card h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  .card h3 a:hover {
+    color: var(--gem);
+  }
+
+  .badge {
+    margin-left: auto;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .summary {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    flex: 1;
+  }
+
+  .size-line {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: color-mix(in srgb, var(--gem) 65%, var(--ink));
+  }
+
+  .state-line {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+  }
+
+  .state-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex: none;
+    background: #b9b1c7;
+  }
+
+  .st-active .state-dot {
+    background: #63c9a8;
+    box-shadow: 0 0 0 3px rgba(99, 201, 168, 0.22);
+  }
+
+  .st-growing .state-dot {
+    background: #f0c75e;
+    box-shadow: 0 0 0 3px rgba(240, 199, 94, 0.24);
+  }
+
+  .st-resting .state-dot {
+    background: #9bb3a0;
+  }
+
+  .st-planned .state-dot {
+    background: transparent;
+    border: 2px dashed #9b8fe8;
+    width: 9px;
+    height: 9px;
+  }
+
+  .plot-card {
+    margin-top: 1.3rem;
+    --gem: #9b8fe8;
+    border-style: dashed;
+    background: transparent;
+  }
+
+  .tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tech li {
+    font-size: 0.72rem;
+    padding: 0.1rem 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--ink-soft);
+  }
+
+  .card-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.85rem;
+    margin-top: 0.2rem;
+  }
+
+  .more {
+    font-weight: 700;
+    color: color-mix(in srgb, var(--gem) 70%, var(--ink));
+  }
+
+  .repo {
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+
+  .status {
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+    border: 1px dashed var(--border);
+    border-radius: 999px;
+    padding: 0.05rem 0.55rem;
+  }
+
+  /* -------------------------------- about ------------------------------- */
+
+  .about {
+    margin-top: 4.5rem;
+    max-width: 46rem;
+  }
+
+  .about p {
+    color: var(--ink-soft);
+    margin: 0 0 1rem;
+  }
+
+  footer {
+    position: relative;
+    z-index: 10;
+    background: var(--cream);
+    border-top: 2px solid var(--border);
+    margin-top: 4rem;
+    padding: 1.5rem 1.4rem 2.2rem;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+  }
+
+  footer p {
+    margin: 0;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: 2px solid var(--ink);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+    transition:
+      transform 0.14s ease,
+      box-shadow 0.14s ease;
+    box-shadow: 0 3px 0 rgba(70, 61, 92, 0.25);
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 rgba(70, 61, 92, 0.25);
+  }
+
+  .btn.primary {
+    background: var(--mint);
+    color: #12483a;
+  }
+
+  .about-actions {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+  }
+</style>
