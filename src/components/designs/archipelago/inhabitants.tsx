@@ -1,7 +1,17 @@
 import { useRef, type RefObject } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { GEO, MAT, islandBob, mulberry32, type IslandSpec } from './common';
+import {
+  GEO,
+  MAT,
+  islandBob,
+  mulberry32,
+  type EnvCtx,
+  type IslandSpec,
+} from './common';
+
+/** Past this much darkness the bots knock off work and mill about. */
+const DUSK = 0.55;
 
 /** Shared per-island scratch state: how many bots are hammering right now. */
 export interface WorkCtx {
@@ -88,6 +98,14 @@ export function BotMesh({
         position={[0, 0.2, 0.2]}
         visible={false}
       />
+      {/* Carried lantern — the shared materials fade it in after dusk, so
+          there's nothing to animate per bot. */}
+      <mesh geometry={GEO.lantern} material={MAT.lantern} position={[0.15, 0.19, 0.11]} />
+      <mesh
+        geometry={GEO.lanternGlow}
+        material={MAT.lanternGlow}
+        position={[0.15, 0.19, 0.11]}
+      />
     </group>
   );
 }
@@ -113,9 +131,10 @@ function enterWander(b: Brain, walkR: number): void {
   b.tz = Math.cos(a) * r;
 }
 
-function enterIdle(b: Brain): void {
+/** Idle stretches get longer the darker it is — the colony winds down. */
+function enterIdle(b: Brain, night: number): void {
   b.state = 'idle';
-  b.timer = 2.5 + b.rng() * 3.5;
+  b.timer = (2.5 + b.rng() * 3.5) * (1 + night * 1.8);
 }
 
 function enterWork(b: Brain, spec: IslandSpec): void {
@@ -137,6 +156,22 @@ function enterWork(b: Brain, spec: IslandSpec): void {
 }
 
 /**
+ * Choose what to do next. After dusk nobody starts a new shift at the build
+ * site; they wander and loiter instead.
+ */
+function pickNext(b: Brain, spec: IslandSpec, night: number): void {
+  const r = b.rng();
+  if (night > DUSK) {
+    if (r < 0.55) enterIdle(b, night);
+    else enterWander(b, spec.walkR);
+    return;
+  }
+  if (r < 0.45) enterIdle(b, night);
+  else if (r < 0.75) enterWork(b, spec);
+  else enterWander(b, spec.walkR);
+}
+
+/**
  * One resident bot, parented to its island group (so it bobs with it).
  * Wander / idle / work state machine, all mutation ref-based — no per-frame
  * allocations, no React state churn.
@@ -144,12 +179,14 @@ function enterWork(b: Brain, spec: IslandSpec): void {
 export function Bot({
   spec,
   ctx,
+  env,
   accentMat,
   seed,
   reduced,
 }: {
   spec: IslandSpec;
   ctx: WorkCtx;
+  env: EnvCtx;
   accentMat: THREE.Material;
   seed: number;
   reduced: boolean;
@@ -206,16 +243,15 @@ export function Bot({
     }
 
     const delta = Math.min(rawDelta, 0.1);
+    const night = env.night;
+    const speed = 0.45 * (1 - night * 0.4); // an unhurried amble after dark
     let hopY = 0;
     let sparkOn = false;
 
     switch (b.state) {
       case 'wander': {
-        if (stepToward(b, delta, 0.45, spec.walkR)) {
-          const r = b.rng();
-          if (r < 0.45) enterIdle(b);
-          else if (r < 0.75) enterWork(b, spec);
-          else enterWander(b, spec.walkR);
+        if (stepToward(b, delta, speed, spec.walkR)) {
+          pickNext(b, spec, night);
         } else {
           body.rotation.z = Math.sin(t * 9 + b.phase) * 0.12;
           body.rotation.x = 0;
@@ -232,14 +268,14 @@ export function Bot({
         const j = Math.sin(t * 1.6 + b.phase * 5);
         hopY = j > 0 ? Math.pow(j, 14) * 0.09 : 0; // occasional little jump
         if (b.timer <= 0) {
-          if (b.rng() < 0.65) enterWander(b, spec.walkR);
+          if (night > DUSK || b.rng() < 0.65) enterWander(b, spec.walkR);
           else enterWork(b, spec);
         }
         break;
       }
       case 'work': {
         if (!b.atSite) {
-          if (stepToward(b, delta, 0.45, null)) {
+          if (stepToward(b, delta, speed, null)) {
             b.atSite = true;
             b.hammering = true;
             ctx.workers += 1;
@@ -257,7 +293,8 @@ export function Bot({
           body.rotation.z = 0;
           head.rotation.y = 0;
           sparkOn = swing > 0.92; // flash on each hit
-          b.timer -= delta;
+          // Caught out after dusk? Wrap up quickly rather than mid-swing.
+          b.timer -= delta * (night > DUSK ? 5 : 1);
           if (b.timer <= 0) {
             b.hammering = false;
             b.atSite = false;

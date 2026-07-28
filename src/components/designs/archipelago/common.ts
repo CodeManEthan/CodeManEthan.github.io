@@ -39,6 +39,17 @@ export function islandBob(t: number, index: number): number {
   return Math.sin(t * 0.5 + index * 1.13) * 0.1;
 }
 
+/**
+ * Live world conditions, written once per frame by the sky rig and read by
+ * everything else. A mutable object rather than React state on purpose: the
+ * whole scene would re-render otherwise, several times a second.
+ */
+export interface EnvCtx {
+  /** 0 = broad daylight, 1 = full dark. */
+  night: number;
+  hour: number;
+}
+
 export function fmtLoc(n: number): string {
   return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : `${n}`;
 }
@@ -96,6 +107,9 @@ export const GEO = {
   // misc
   cloudPuff: new THREE.SphereGeometry(0.55, 7, 5),
   hit: new THREE.SphereGeometry(1, 12, 10),
+  // nightfall
+  lantern: new THREE.SphereGeometry(0.055, 6, 5),
+  lanternGlow: new THREE.SphereGeometry(0.14, 6, 5),
 } as const;
 
 /* -------------------------- shared materials ------------------------- */
@@ -103,6 +117,29 @@ export const GEO = {
 function flat(color: string, roughness = 0.9): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({ color, flatShading: true, roughness });
 }
+
+/**
+ * Soft round sprite for point clouds — untextured points render as hard
+ * squares, which reads as a glitch on snowflakes and fireflies.
+ */
+function discTexture(): THREE.CanvasTexture | null {
+  if (typeof document === 'undefined') return null;
+  const size = 32;
+  const c = document.createElement('canvas');
+  c.width = size;
+  c.height = size;
+  const ctx = c.getContext('2d');
+  if (!ctx) return null;
+  const g = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+  g.addColorStop(0, 'rgba(255,255,255,1)');
+  g.addColorStop(0.45, 'rgba(255,255,255,0.9)');
+  g.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, size, size);
+  return new THREE.CanvasTexture(c);
+}
+
+const DISC = discTexture();
 
 export const MAT = {
   dirt: flat('#a97e5f', 0.95),
@@ -125,5 +162,58 @@ export const MAT = {
     flatShading: true,
     transparent: true,
     opacity: 0.92,
+  }),
+
+  /* Nightfall. The sky rig mutates the opacity/emissive of these every frame,
+     which is why they're shared singletons rather than per-instance. */
+  window: new THREE.MeshStandardMaterial({
+    color: '#bfe3f2',
+    emissive: '#ffdf9e',
+    emissiveIntensity: 0.35,
+    flatShading: true,
+  }),
+  lantern: new THREE.MeshBasicMaterial({
+    color: '#ffd98a',
+    transparent: true,
+    opacity: 0,
+  }),
+  lanternGlow: new THREE.MeshBasicMaterial({
+    color: '#ffc46a',
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+  }),
+  star: new THREE.PointsMaterial({
+    color: '#ffffff',
+    // Screen-space size: the field sits ~78 units out, so attenuated points
+    // would round to nothing.
+    size: 2,
+    sizeAttenuation: false,
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+  }),
+  firefly: new THREE.PointsMaterial({
+    color: '#ffe08a',
+    map: DISC,
+    size: 0.13,
+    sizeAttenuation: true,
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+  }),
+  rain: new THREE.LineBasicMaterial({
+    color: '#cfe0f5',
+    transparent: true,
+    opacity: 0.6,
+  }),
+  snow: new THREE.PointsMaterial({
+    color: '#ffffff',
+    map: DISC,
+    size: 0.11,
+    sizeAttenuation: true,
+    transparent: true,
+    opacity: 0.9,
+    depthWrite: false,
   }),
 } as const;

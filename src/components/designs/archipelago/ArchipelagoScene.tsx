@@ -15,9 +15,12 @@ import {
   fmtLoc,
   islandBob,
   mulberry32,
+  type EnvCtx,
   type IslandSpec,
 } from './common';
 import { Bot, BuildSite, Traveler, type WorkCtx } from './inhabitants';
+import { Fireflies, Precipitation, SkyRig, Stars } from './atmosphere';
+import { readSkyOverrides, weatherForDay } from './sky';
 
 export interface ArchipelagoProject {
   id: string;
@@ -130,14 +133,9 @@ function House({
         <boxGeometry args={[0.22, 0.36, 0.04]} />
         <meshStandardMaterial color="#a1745b" flatShading />
       </mesh>
-      <mesh position={[0.26, 0.42, 0.4]}>
+      {/* Shared window material — the sky rig lights it up after dusk. */}
+      <mesh position={[0.26, 0.42, 0.4]} material={MAT.window}>
         <boxGeometry args={[0.16, 0.16, 0.04]} />
-        <meshStandardMaterial
-          color="#bfe3f2"
-          emissive="#ffdf9e"
-          emissiveIntensity={0.35}
-          flatShading
-        />
       </mesh>
     </group>
   );
@@ -206,10 +204,12 @@ function Island({
   spec,
   reduced,
   hoverCtx,
+  env,
 }: {
   spec: IslandSpec;
   reduced: boolean;
   hoverCtx: HoverCtx;
+  env: EnvCtx;
 }) {
   const rootRef = useRef<THREE.Group>(null);
   const crystalRef = useRef<THREE.Group>(null);
@@ -326,9 +326,10 @@ function Island({
       c.rotation.y += delta * 0.7;
       c.position.y = crystalY + Math.sin(t * 1.4 + spec.index * 2) * 0.05;
     }
+    // The accent crystals are the island's light source after dark.
     crystalMat.emissiveIntensity = THREE.MathUtils.lerp(
       crystalMat.emissiveIntensity,
-      hovered ? 0.85 : 0.16,
+      hovered ? 1.1 : 0.16 + env.night * 0.75,
       0.12
     );
     grassMat.emissiveIntensity = THREE.MathUtils.lerp(
@@ -441,6 +442,7 @@ function Island({
           key={k}
           spec={spec}
           ctx={workCtx}
+          env={env}
           accentMat={accentMat}
           seed={spec.index * 31 + k * 7 + 1}
           reduced={reduced}
@@ -542,6 +544,18 @@ function Scene({ projects }: { projects: ArchipelagoProject[] }) {
   const draggingRef = useRef(false);
   const coolRef = useRef(0);
 
+  // Clock-driven world conditions. `env` is mutated by the sky rig each frame
+  // and read by the islands and bots — deliberately outside React's state.
+  const env = useRef<EnvCtx>({ night: 0, hour: 12 }).current;
+  const overrides = useMemo(
+    () => readSkyOverrides(typeof window === 'undefined' ? '' : window.location.search),
+    []
+  );
+  const weather = useMemo(
+    () => weatherForDay(new Date(), overrides.weather),
+    [overrides]
+  );
+
   // Slow auto-rotate when idle; pause while dragging/zooming or hovering an
   // island, resume a few seconds after the last interaction.
   useFrame((_, delta) => {
@@ -554,29 +568,17 @@ function Scene({ projects }: { projects: ArchipelagoProject[] }) {
 
   return (
     <>
-      <ambientLight intensity={0.55} color="#fff6ea" />
-      <hemisphereLight args={['#cfe8f5', '#ffe6c9', 0.6]} />
-      <directionalLight
-        position={[8, 13, 6]}
-        intensity={1.7}
-        color="#ffe9cf"
-        castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
-        shadow-camera-left={-12}
-        shadow-camera-right={12}
-        shadow-camera-top={12}
-        shadow-camera-bottom={-12}
-        shadow-camera-near={1}
-        shadow-camera-far={35}
-        shadow-bias={-0.0004}
-      />
+      {/* First child: it writes `env` before anything downstream reads it. */}
+      <SkyRig env={env} weather={weather} overrides={overrides} reduced={reduced} />
 
       {specs.map((s) => (
-        <Island key={s.id} spec={s} reduced={reduced} hoverCtx={hoverCtx} />
+        <Island key={s.id} spec={s} reduced={reduced} hoverCtx={hoverCtx} env={env} />
       ))}
       <Traveler islands={specs} reduced={reduced} />
       <Clouds reduced={reduced} />
+      <Stars />
+      <Fireflies reduced={reduced} />
+      <Precipitation weather={weather} reduced={reduced} />
 
       <OrbitControls
         ref={controlsRef}

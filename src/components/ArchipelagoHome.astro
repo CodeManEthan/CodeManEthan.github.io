@@ -183,9 +183,19 @@ const gemColors = GEM_COLORS;
     --ink: #43405a;
     --ink-soft: #7a7690;
     --border: #ece3d2;
+    /* Sky + hero chrome. These are the midday values; once the 3D scene
+       hydrates its sky rig rewrites them every frame from the real clock, so
+       the hero is dark and legible at night. Everything below the hero keeps
+       the fixed light palette. */
     --sky-top: #c8e6f5;
     --sky-mid: #e8f2ee;
     --sky-bottom: #fdf3e2;
+    --hero-ink: #43405a;
+    --hero-ink-soft: #7a7690;
+    --hero-card-bg: rgba(255, 255, 255, 0.72);
+    --hero-card-border: rgba(255, 255, 255, 0.8);
+    --hero-hint-bg: rgba(255, 255, 255, 0.6);
+    --hero-shadow: rgba(67, 64, 90, 0.12);
     --mint: #63c9a8;
     --rose: #ef7f93;
     --lavender: #9b8fe8;
@@ -234,6 +244,8 @@ const gemColors = GEM_COLORS;
     align-items: center;
     justify-content: space-between;
     padding: 1.1rem clamp(1.2rem, 4vw, 3rem);
+    /* Sits over the sky, so it follows the sky's palette. */
+    color: var(--hero-ink);
   }
 
   .wordmark {
@@ -250,12 +262,12 @@ const gemColors = GEM_COLORS;
   .topbar nav a {
     font-weight: 600;
     font-size: 0.92rem;
-    color: var(--ink-soft);
+    color: var(--hero-ink-soft);
     transition: color 0.15s ease;
   }
 
   .topbar nav a:hover {
-    color: var(--ink);
+    color: var(--hero-ink);
   }
 
   /* --------------------------------- hero -------------------------------- */
@@ -286,11 +298,12 @@ const gemColors = GEM_COLORS;
     max-width: 27rem;
     margin-left: clamp(1.2rem, 6vw, 5rem);
     padding: 1.6rem 1.8rem;
-    background: rgba(255, 255, 255, 0.72);
+    background: var(--hero-card-bg);
+    color: var(--hero-ink);
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border: 1px solid var(--hero-card-border);
     border-radius: 22px;
-    box-shadow: 0 16px 40px rgba(67, 64, 90, 0.12);
+    box-shadow: 0 16px 40px var(--hero-shadow);
     pointer-events: none;
   }
 
@@ -316,7 +329,7 @@ const gemColors = GEM_COLORS;
 
   .tagline {
     margin: 0 0 1.3rem;
-    color: var(--ink-soft);
+    color: var(--hero-ink-soft);
     font-size: 1.02rem;
   }
 
@@ -333,6 +346,9 @@ const gemColors = GEM_COLORS;
     border-radius: 999px;
     border: 1.5px solid var(--border);
     background: #fff;
+    /* Pinned to the page ink, not the hero's: the pill stays white after dark,
+       so it must not inherit the hero's light-on-dark text colour. */
+    color: var(--ink);
     font-weight: 650;
     font-size: 0.93rem;
     transition:
@@ -362,8 +378,8 @@ const gemColors = GEM_COLORS;
     margin: 0;
     padding: 0.35rem 1rem;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.6);
-    color: var(--ink-soft);
+    background: var(--hero-hint-bg);
+    color: var(--hero-ink-soft);
     font-size: 0.8rem;
     font-weight: 550;
     pointer-events: none;
