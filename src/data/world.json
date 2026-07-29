@@ -5,7 +5,7 @@
     "title": "The Vale",
     "owner": "CodeManEthan",
     "tagline": "Software engineer & agentic engineer",
-    "day": 641
+    "day": 646
   },
   "bounds": {
     "u0": -45,
@@ -5282,7 +5282,7 @@
           "floors": 1,
           "roof": "thatch",
           "accent": "#6cc4d9",
-          "progress": 0.72,
+          "progress": 0.79,
           "condition": 0.8247832460794597,
           "chimney": false,
           "cupola": false,
@@ -5880,7 +5880,7 @@
           "floors": 1,
           "roof": "hip",
           "accent": "#e98fc3",
-          "progress": 0.5,
+          "progress": 0.68,
           "condition": 0.9186334854271263,
           "chimney": false,
           "cupola": false,
@@ -5988,7 +5988,7 @@
           "floors": 2,
           "roof": "thatch",
           "accent": "#f0c75e",
-          "progress": 0.56,
+          "progress": 0.69,
           "condition": 1,
           "chimney": false,
           "cupola": false,
@@ -6048,7 +6048,7 @@
           "floors": 2,
           "roof": "hip",
           "accent": "#f0c75e",
-          "progress": 0.08,
+          "progress": 0.22,
           "condition": 1,
           "chimney": true,
           "cupola": false,
@@ -6068,7 +6068,7 @@
           "floors": 2,
           "roof": "gable",
           "accent": "#f0c75e",
-          "progress": 0.05,
+          "progress": 0.28,
           "condition": 1,
           "chimney": false,
           "cupola": false,
@@ -6312,7 +6312,7 @@
       "roof": "gable",
       "accent": "#b78a5e",
       "progress": 1,
-      "condition": 0.8,
+      "condition": 0.42,
       "chimney": false,
       "cupola": false,
       "antenna": false,
@@ -19489,6 +19489,650 @@
       "gy": 2.6399105330929196,
       "seed": 12398,
       "owner": "c8_11"
+    },
+    {
+      "kind": "pine",
+      "gx": -0.6998869238313095,
+      "gy": 17.7437589457193,
+      "seed": 64600,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 0.7014836550077046,
+      "gy": 18.26090782273046,
+      "seed": 64637,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 1.788095702333301,
+      "gy": 21.180656227365382,
+      "seed": 64674,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -1.65046658688623,
+      "gy": 18.063240691117883,
+      "seed": 64711,
+      "owner": "c2_7"
+    },
+    {
+      "kind": "pine",
+      "gx": -0.208159389942141,
+      "gy": 18.138364311340688,
+      "seed": 64748,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -0.8177196901432122,
+      "gy": 21.80932102018142,
+      "seed": 64785,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 2.195514951641794,
+      "gy": 21.695632526643337,
+      "seed": 64822,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 1.540507633717139,
+      "gy": 21.8228201000927,
+      "seed": 64859,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -2.060793038389214,
+      "gy": 20.07655643063942,
+      "seed": 64896,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -1.0360568821035248,
+      "gy": 18.770132822911094,
+      "seed": 64933,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 0.7401505119915104,
+      "gy": 18.632818929214935,
+      "seed": 64970,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -1.2136148252619154,
+      "gy": 17.01386223456749,
+      "seed": 65007,
+      "owner": "c2_7"
+    },
+    {
+      "kind": "pine",
+      "gx": -1.62475557840658,
+      "gy": 19.892243883260996,
+      "seed": 65044,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 1.5182084597005794,
+      "gy": 23.31664396522602,
+      "seed": 65081,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -0.8685025118623155,
+      "gy": 19.025342205603373,
+      "seed": 65118,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -2.0571402344023593,
+      "gy": 19.99458806776093,
+      "seed": 65155,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 1.9117075823202683,
+      "gy": 18.720785034981503,
+      "seed": 65192,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 2.0396183085506703,
+      "gy": 22.404744242061135,
+      "seed": 65229,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 0.4770274562721042,
+      "gy": 18.17145626912331,
+      "seed": 65266,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 0.0316523508148272,
+      "gy": 18.01955824118491,
+      "seed": 65303,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -2.2111700513137293,
+      "gy": 20.07616292628986,
+      "seed": 65340,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -0.9902730223371954,
+      "gy": 21.406138430580082,
+      "seed": 65377,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 1.749087793828096,
+      "gy": 18.472961124082055,
+      "seed": 65414,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 1.4808032067775336,
+      "gy": 20.048076293332045,
+      "seed": 65451,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -0.2754971188197928,
+      "gy": 18.162978666404623,
+      "seed": 65488,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 1.6578619052590398,
+      "gy": 21.80225457629768,
+      "seed": 65525,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 1.3844400960226526,
+      "gy": 21.94034905486972,
+      "seed": 65562,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -1.1472362851305462,
+      "gy": 21.78681806222874,
+      "seed": 65599,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -1.5809410120662992,
+      "gy": 18.093271075947662,
+      "seed": 65636,
+      "owner": "c2_7"
+    },
+    {
+      "kind": "pine",
+      "gx": -2.1507908449001594,
+      "gy": 18.14562218272419,
+      "seed": 65673,
+      "owner": "c2_7"
+    },
+    {
+      "kind": "pine",
+      "gx": 1.1485643574225683,
+      "gy": 21.846291633719602,
+      "seed": 65710,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 0.8367061675213492,
+      "gy": 18.090556605705814,
+      "seed": 65747,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -2.400311998008032,
+      "gy": 19.235797095501365,
+      "seed": 65784,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -0.9575264034026283,
+      "gy": 19.847545301401134,
+      "seed": 65821,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -0.5642983450343237,
+      "gy": 21.348502207250586,
+      "seed": 65858,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 2.193818806707748,
+      "gy": 19.490925668103905,
+      "seed": 65895,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 0.3307328222118677,
+      "gy": 23.523941846151413,
+      "seed": 65932,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 0.6760460127784427,
+      "gy": 22.810212786550817,
+      "seed": 65969,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 1.6179540091779732,
+      "gy": 21.70913806195061,
+      "seed": 66006,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 0.2098621815551116,
+      "gy": 19.054970438579495,
+      "seed": 66043,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 2.269830207358426,
+      "gy": 23.3754369660834,
+      "seed": 66080,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -2.920151081682505,
+      "gy": 19.778794426067144,
+      "seed": 66117,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -1.1672456366679445,
+      "gy": 17.98081788765971,
+      "seed": 66154,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -1.7900772883581029,
+      "gy": 17.24286692228858,
+      "seed": 66191,
+      "owner": "c2_7"
+    },
+    {
+      "kind": "pine",
+      "gx": -1.942288611819162,
+      "gy": 19.932122835176813,
+      "seed": 66228,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -0.49843157057710563,
+      "gy": 17.27781617199436,
+      "seed": 66265,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -0.8561534658783234,
+      "gy": 18.67004877389619,
+      "seed": 66302,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -0.08354768410360336,
+      "gy": 21.39548495483803,
+      "seed": 66339,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 2.052549243755827,
+      "gy": 19.526883763245742,
+      "seed": 66376,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": -1.2815041573488504,
+      "gy": 20.42339293644462,
+      "seed": 66413,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 1.2224419039235652,
+      "gy": 22.587718436560834,
+      "seed": 66450,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "pine",
+      "gx": 2.072415389672109,
+      "gy": 19.24971492120723,
+      "seed": 66487,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "oak",
+      "gx": 0.30551275808726785,
+      "gy": 15.863841015277892,
+      "seed": 64700,
+      "owner": "c2_7"
+    },
+    {
+      "kind": "bush",
+      "gx": 1.9373557642942227,
+      "gy": 17.106315922093195,
+      "seed": 64758,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "bush",
+      "gx": -1.2143613470736216,
+      "gy": 23.497271623286984,
+      "seed": 64787,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "bush",
+      "gx": 2.3832408279984296,
+      "gy": 17.887483041987494,
+      "seed": 64816,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "oak",
+      "gx": 3.3613113474274137,
+      "gy": 17.980803269926565,
+      "seed": 64961,
+      "owner": "c3_8"
+    },
+    {
+      "kind": "oak",
+      "gx": 0.10214864098544751,
+      "gy": 16.193928344192614,
+      "seed": 64990,
+      "owner": "c2_7"
+    },
+    {
+      "kind": "oak",
+      "gx": 4.3443849047833805,
+      "gy": 20.543602158056345,
+      "seed": 65019,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "bush",
+      "gx": -0.32594381358085656,
+      "gy": 15.684538723557491,
+      "seed": 65048,
+      "owner": "c2_7"
+    },
+    {
+      "kind": "bush",
+      "gx": 0.5489926885294629,
+      "gy": 23.985849040896436,
+      "seed": 65077,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "bush",
+      "gx": -3.041922152093427,
+      "gy": 15.913494551061422,
+      "seed": 65135,
+      "owner": "c2_7"
+    },
+    {
+      "kind": "stump",
+      "gx": -3.3999999999999986,
+      "gy": 21,
+      "seed": 64800,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "stump",
+      "gx": -2.700000000000001,
+      "gy": 22.1,
+      "seed": 64813,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "stump",
+      "gx": -1.4000000000000004,
+      "gy": 22.6,
+      "seed": 64826,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "stump",
+      "gx": -0.9000000000000004,
+      "gy": 23.700000000000003,
+      "seed": 64839,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "stump",
+      "gx": 0.20000000000000107,
+      "gy": 23.4,
+      "seed": 64852,
+      "owner": "c2_8"
+    },
+    {
+      "kind": "lumber",
+      "gx": -2.4000000000000004,
+      "gy": 22.799999999999997,
+      "seed": 64865,
+      "owner": "c1_8"
+    },
+    {
+      "kind": "lumber",
+      "gx": -1.799999999999999,
+      "gy": 23.6,
+      "seed": 64878,
+      "owner": "c1_8"
+    },
+    {
+      "kind": "blossom",
+      "gx": 8.520255902246571,
+      "gy": -0.2692660310072821,
+      "seed": 64900,
+      "owner": "c5_7"
+    },
+    {
+      "kind": "blossom",
+      "gx": 8.749678428075276,
+      "gy": 1.4709937163861468,
+      "seed": 64905,
+      "owner": "c5_7"
+    },
+    {
+      "kind": "blossom",
+      "gx": 8.655699340603315,
+      "gy": 3.03343767169863,
+      "seed": 64910,
+      "owner": "c5_7"
+    },
+    {
+      "kind": "blossom",
+      "gx": 8.615808932390063,
+      "gy": 4.696262926887721,
+      "seed": 64915,
+      "owner": "c4_7"
+    },
+    {
+      "kind": "blossom",
+      "gx": 10.333178347069769,
+      "gy": -0.03657056121155655,
+      "seed": 64917,
+      "owner": "c5_7"
+    },
+    {
+      "kind": "blossom",
+      "gx": 10.189586780662648,
+      "gy": 1.4107286301208664,
+      "seed": 64922,
+      "owner": "c5_7"
+    },
+    {
+      "kind": "blossom",
+      "gx": 10.225883981329389,
+      "gy": 2.975273639033549,
+      "seed": 64927,
+      "owner": "c5_7"
+    },
+    {
+      "kind": "blossom",
+      "gx": 10.250468400749376,
+      "gy": 4.758038771990687,
+      "seed": 64932,
+      "owner": "c5_7"
+    },
+    {
+      "kind": "blossom",
+      "gx": 11.802432412304917,
+      "gy": -0.29100420624017787,
+      "seed": 64934,
+      "owner": "c5_7"
+    },
+    {
+      "kind": "blossom",
+      "gx": 11.913152396841907,
+      "gy": 1.3468197238631543,
+      "seed": 64939,
+      "owner": "c5_7"
+    },
+    {
+      "kind": "blossom",
+      "gx": 11.884742128476502,
+      "gy": 3.130940941814332,
+      "seed": 64944,
+      "owner": "c5_7"
+    },
+    {
+      "kind": "blossom",
+      "gx": 11.85309626276139,
+      "gy": 4.766126944916322,
+      "seed": 64949,
+      "owner": "c5_7"
+    },
+    {
+      "kind": "blossom",
+      "gx": 13.43738967452664,
+      "gy": -0.1468059013132006,
+      "seed": 64951,
+      "owner": "c5_7"
+    },
+    {
+      "kind": "blossom",
+      "gx": 13.343623878411018,
+      "gy": 1.3907660348573696,
+      "seed": 64956,
+      "owner": "c5_7"
+    },
+    {
+      "kind": "blossom",
+      "gx": 13.449015552341008,
+      "gy": 3.1179401561152194,
+      "seed": 64961,
+      "owner": "c5_7"
+    },
+    {
+      "kind": "blossom",
+      "gx": 13.466544713894837,
+      "gy": 4.5715469023911295,
+      "seed": 64966,
+      "owner": "c5_8"
+    },
+    {
+      "kind": "fenceL",
+      "gx": 7.6,
+      "gy": 0.8499999999999996,
+      "seed": 65000,
+      "owner": "c5_7"
+    },
+    {
+      "kind": "fenceL",
+      "gx": 7.6,
+      "gy": 2.4500000000000006,
+      "seed": 65011,
+      "owner": "c5_7"
+    },
+    {
+      "kind": "fenceR",
+      "gx": 9.8,
+      "gy": 5.85,
+      "seed": 65022,
+      "owner": "c4_7"
+    },
+    {
+      "kind": "fenceR",
+      "gx": 11.4,
+      "gy": 5.85,
+      "seed": 65033,
+      "owner": "c5_8"
+    },
+    {
+      "kind": "cart",
+      "gx": 14.6,
+      "gy": 4.85,
+      "seed": 65044,
+      "owner": "c5_8"
+    },
+    {
+      "kind": "bush",
+      "gx": 14.8,
+      "gy": -0.5500000000000007,
+      "seed": 65055,
+      "owner": "c6_7"
+    },
+    {
+      "kind": "bush",
+      "gx": 7.8,
+      "gy": 5.45,
+      "seed": 65066,
+      "owner": "c4_7"
     }
   ],
   "travelers": [
@@ -19902,6 +20546,42 @@
       "village": "__home",
       "kind": "trade",
       "text": "Snapshot taken. The vale is up to date."
+    },
+    {
+      "day": 643,
+      "village": "__frontier",
+      "kind": "raise",
+      "text": "Frame standing on the Store Shed at Site Eight. Roof timbers still on the cart."
+    },
+    {
+      "day": 644,
+      "village": "__home",
+      "kind": "trade",
+      "text": "Market day. 14 carts and walkers on the roads between 9 settlements."
+    },
+    {
+      "day": 646,
+      "village": "pdf-merger",
+      "kind": "raise",
+      "text": "Roof going on over the Cottage at PDF Merger & Converter — battens down, weather out by dusk."
+    },
+    {
+      "day": 646,
+      "village": "__frontier",
+      "kind": "trade",
+      "text": "Felling began in the Long Wood above the frontier track. Five stumps and two squared stacks at the verge — Site Eight takes its roof timbers from here now."
+    },
+    {
+      "day": 646,
+      "village": "__home",
+      "kind": "found",
+      "text": "Blossom set in rows on the south-east field: sixteen young trees, posts and rail against the sheep, and the picking cart left out overnight. Ask again in five years."
+    },
+    {
+      "day": 646,
+      "village": "__home",
+      "kind": "road",
+      "text": "The Vale Mill is going: shingles off the north pitch, the wheel binding on its axle. Costed for repair before the wet season."
     }
   ]
 }
