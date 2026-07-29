@@ -5961,7 +5961,7 @@
     },
     {
       "id": "__frontier",
-      "name": "Site Eight",
+      "name": "Timberfoot",
       "kind": "frontier",
       "gx": 5,
       "gy": 29,
@@ -5969,12 +5969,13 @@
       "accent": "#f0c75e",
       "loc": 0,
       "tech": [
-        "surveyed",
-        "timber on order"
+        "timber",
+        "stone",
+        "the crews"
       ],
-      "status": "soon",
-      "summary": "The eighth holding. Stakes in, plot pegged out, first frames going up.",
-      "href": "#projects",
+      "status": "building",
+      "summary": "The crews' own town, at the foot of the Long Wood. Timber comes down the track and the vale’s building goes out from here.",
+      "href": "#ledger",
       "founded": 612,
       "population": 3,
       "buildings": [
@@ -20582,6 +20583,12 @@
       "village": "__home",
       "kind": "road",
       "text": "The Vale Mill is going: shingles off the north pitch, the wheel binding on its axle. Costed for repair before the wet season."
+    },
+    {
+      "day": 646,
+      "village": "__frontier",
+      "kind": "found",
+      "text": "The site they called Site Eight has a name at last: Timberfoot, for the wood at its back. Nameboard up by the gate — and the crews who raise every roof in the vale finally have roofs of their own going up."
     }
   ]
 }

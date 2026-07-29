@@ -2,7 +2,7 @@
  * The Vale — the free-roam island.
  *
  * A pixel-art countryside on a plain 2D canvas: one village per project, roads
- * between them, carts on the roads, and an eighth site being staked out at the
+ * between them, carts on the roads, and a timber town going up at the
  * frontier. Everything it draws comes from the plain `WorldState` object built
  * by `worldstate.ts`; this file only owns the camera, the input model and the
  * accessible overlay.
@@ -606,7 +606,7 @@ export default function TheVale() {
               tech: v.tech.slice(0, 4).join(' · '),
               accent: v.accent,
               href: v.href,
-              cta: v.kind === 'project' ? 'Open project →' : v.kind === 'frontier' ? 'What lands here →' : 'About Ethan →',
+              cta: v.kind === 'project' ? 'Open project →' : v.kind === 'frontier' ? 'See what’s going up →' : 'About Ethan →',
             }
           : null
       );
@@ -680,7 +680,7 @@ export default function TheVale() {
                   {v.kind === 'project'
                     ? ` — ${fmtLoc(v.loc)} lines, ${villageSize(v.loc)} of ${v.buildings.length} buildings`
                     : v.kind === 'frontier'
-                      ? ' — the eighth site, being founded'
+                      ? ' — the timber town, still going up'
                       : ' — Ethan’s homestead at the crossroads'}
                 </span>
               </a>
