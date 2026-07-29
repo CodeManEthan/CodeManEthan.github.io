@@ -1,30 +1,18 @@
 ---
 import { getCollection } from 'astro:content';
 import TheVale from '../../components/designs/vale/TheVale';
-import { buildWorld, fmtLoc, villageSize } from '../../components/designs/vale/worldstate';
+import { fmtLoc, villageSize, type WorldState } from '../../components/designs/vale/worldstate';
 import { LOC, GEM_COLORS } from '../../data/islands';
+import worldJson from '../../data/world.json';
 
 const projects = (await getCollection('projects')).sort(
   (a, b) => a.data.order - b.data.order
 );
 
-// One village per project. Size, building count and personality are all derived
-// from this, plus the real line counts in src/data/islands.ts.
-const inputs = projects.map((p, i) => ({
-  id: p.id,
-  title: p.data.title,
-  summary: p.data.summary,
-  tech: p.data.tech,
-  status: p.data.status,
-  featured: p.data.featured,
-  loc: LOC[p.id] ?? 2000,
-  accent: GEM_COLORS[i % GEM_COLORS.length],
-}));
-
-// The world is plain data with no renderer attached, so the page can build the
-// exact same object the canvas does and read straight out of it. This is the
-// shape that becomes a committed world.json for scheduled agents to patch.
-const world = buildWorld(inputs);
+// The committed world.json IS the vale — the canvas renders it and this page
+// reads straight out of it, so a patch to the file changes both. Reseed with
+// `node scripts/build-world.mjs` (destructive: discards accumulated patches).
+const world = worldJson as unknown as WorldState;
 const byId = new Map(world.villages.map((v) => [v.id, v]));
 const ledger = world.buildLog.slice(-8).reverse();
 const totalBuildings = world.villages.reduce((n, v) => n + v.buildings.length, 0);
@@ -60,7 +48,7 @@ const villageName = (id: string) => byId.get(id)?.name ?? id;
 
     <section class="hero" aria-label="The Vale — a pixel-art map of Ethan's projects">
       <div class="hero-scene">
-        <TheVale client:only="react" projects={inputs} />
+        <TheVale client:only="react" />
       </div>
 
       <div class="hero-copy">

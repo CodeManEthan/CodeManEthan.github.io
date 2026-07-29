@@ -18,7 +18,7 @@
  * and repaints only when the camera moves — which it then does in one jump.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { TH, TW, shade } from './art';
 import {
   buildScene,
@@ -30,18 +30,18 @@ import {
   type Smoke,
 } from './scene';
 import {
-  buildWorld,
   fmtLoc,
   isoX,
   isoY,
   villageSize,
-  type ProjectInput,
   type VillageState,
+  type WorldState,
 } from './worldstate';
+import worldJson from '../../../data/world.json';
 
-interface Props {
-  projects: ProjectInput[];
-}
+// The committed world.json is the single source of truth for everything the
+// vale is; patching it (and only it) is how the world evolves between deploys.
+const world = worldJson as unknown as WorldState;
 
 interface Cam {
   cx: number;
@@ -71,7 +71,7 @@ function metaFor(v: VillageState): string {
   return `${fmtLoc(v.loc)} lines · ${villageSize(v.loc)} · ${v.buildings.length} buildings`;
 }
 
-export default function TheVale({ projects }: Props) {
+export default function TheVale() {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const miniRef = useRef<HTMLCanvasElement | null>(null);
@@ -91,8 +91,6 @@ export default function TheVale({ projects }: Props) {
   const paintRef = useRef<() => void>(() => {});
   const reducedRef = useRef(false);
   const touchedRef = useRef<string | null>(null);
-
-  const world = useMemo(() => buildWorld(projects), [projects]);
 
   const api = useRef<{
     vw: number;
