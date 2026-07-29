@@ -5,7 +5,7 @@
     "title": "The Vale",
     "owner": "CodeManEthan",
     "tagline": "Software engineer & agentic engineer",
-    "day": 640
+    "day": 641
   },
   "bounds": {
     "u0": -45,
@@ -6008,7 +6008,7 @@
           "floors": 2,
           "roof": "gable",
           "accent": "#f0c75e",
-          "progress": 0.34,
+          "progress": 0.46,
           "condition": 1,
           "chimney": false,
           "cupola": false,
