@@ -5,7 +5,7 @@
 export const LOC: Record<string, number> = {
   'finance-tracker': 67732,
   kdoitall: 26417,
-  'project-hub': 19773,
+  'project-hub': 19609,
   docist: 18087,
   ludicrous: 4206,
   'one-record-many-bells': 2330,
