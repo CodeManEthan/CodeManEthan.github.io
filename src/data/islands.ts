@@ -6,10 +6,9 @@ export const LOC: Record<string, number> = {
   'finance-tracker': 67732,
   kdoitall: 26417,
   'project-hub': 19773,
-  'pdf-merger': 13609,
+  docist: 18087,
   'war-card-game': 3921,
   'one-record-many-bells': 2330,
-  'montage-it': 1691,
 };
 
 export const GEM_COLORS = [
