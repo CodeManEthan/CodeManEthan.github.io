@@ -4,6 +4,7 @@ summary: Local-first Flutter app for hierarchical project management — Project
 tech: [Flutter, Dart, SQLite, Local-first]
 status: public
 repo: https://github.com/CodeManEthan/project-hub
+demo: https://codemanethan.github.io/project-hub/
 screenshot: /screenshots/project-hub.png
 order: 6
 ---
