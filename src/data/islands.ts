@@ -7,7 +7,7 @@ export const LOC: Record<string, number> = {
   kdoitall: 26417,
   'project-hub': 19773,
   docist: 18087,
-  'war-card-game': 3921,
+  ludicrous: 4206,
   'one-record-many-bells': 2330,
 };
 
