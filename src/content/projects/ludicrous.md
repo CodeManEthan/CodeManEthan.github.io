@@ -4,6 +4,7 @@ summary: Games at impossible scale — War and Blackjack with up to 100 players 
 tech: [Python, stdlib-only, JavaScript, Canvas]
 status: public
 repo: https://github.com/CodeManEthan/ludicrous
+demo: https://ludicrous-production-6bdb.up.railway.app
 screenshot: /screenshots/ludicrous.png
 order: 5
 ---

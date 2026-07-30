@@ -4,10 +4,15 @@ summary: Self-hosted document toolkit — merge PDFs with automatic conversion o
 tech: [Python, Flask, JavaScript, Tesseract OCR, Plugin architecture]
 status: public
 repo: https://github.com/CodeManEthan/docist
+demo: https://docist-production.up.railway.app
 screenshot: /screenshots/docist.png
 featured: true
 order: 4
 ---
+
+## Live demo
+
+The demo at [docist-production.up.railway.app](https://docist-production.up.railway.app) sits behind a shared password — `docist-demo-4c9fd6` — to keep the converter from becoming a free public utility. Log in and try it with any files you like.
 
 ## Overview
 
