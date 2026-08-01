@@ -119,7 +119,7 @@ const gemColors = GEM_COLORS;
                   )}
                   {p.data.status === 'private' && (
                     <span class="status private">
-                      Source private · demo on request
+                      {p.data.demo ? 'Source private' : 'Source private · demo on request'}
                     </span>
                   )}
                   {p.data.status === 'soon' && (

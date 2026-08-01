@@ -3,10 +3,15 @@ title: Finance Tracker
 summary: Full-stack personal finance tracker with a Flask backend, React/TypeScript frontend, and Docker deployment.
 tech: [Python, Flask, SQLAlchemy, React, TypeScript, Docker]
 status: private
+demo: https://finance-tracker-production-a51c.up.railway.app
 screenshot: /screenshots/finance-tracker.png
 featured: true
 order: 1
 ---
+
+## Live demo
+
+Try it at [finance-tracker-production-a51c.up.railway.app](https://finance-tracker-production-a51c.up.railway.app) — the login page shows the shared demo credentials (username `demo`). The demo account comes seeded with four months of realistic transactions, budgets, and categories, and resets nightly.
 
 ## Overview
 
@@ -21,4 +26,4 @@ A full-stack personal finance application for tracking accounts, transactions, a
 
 ## Status
 
-The source is private since it evolved alongside my real financial data, but I'm happy to walk through the code or run a live demo on request.
+The source is private since it evolved alongside my real financial data, but the live demo above runs the full stack — Flask API, React frontend, and Postgres — and I'm happy to walk through the code on request.

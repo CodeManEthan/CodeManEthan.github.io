@@ -44,7 +44,7 @@ const { Content } = await render(project);
         {status === 'public' && repo && (
           <a href={repo} target="_blank" rel="noopener">Source on GitHub ↗</a>
         )}
-        {status === 'private' && <span class="badge">Source private · demo on request</span>}
+        {status === 'private' && <span class="badge">{demo ? 'Source private' : 'Source private · demo on request'}</span>}
         {status === 'soon' && <span class="badge">Repo coming soon</span>}
         {demo && <a href={demo} target="_blank" rel="noopener">Live demo ↗</a>}
       </div>
