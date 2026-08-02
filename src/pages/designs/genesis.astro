@@ -1,0 +1,116 @@
+---
+import TheGenesis from '../../components/designs/genesis/TheGenesis';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta
+      name="description"
+      content="Genesis — a pixel-art valley generated fresh from each day's seed, growing from one house into towns over 24 hours of world time."
+    />
+    <title>Genesis — a new world every day</title>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="chrome">
+        <div class="titles">
+          <h1>Genesis — a new world every day</h1>
+          <p>
+            One seed per date. At midnight the valley is a single house; by the
+            next midnight it is towns, a highway and a bridge. Scrub the day, or
+            leave it on LIVE and watch it build in real time.
+          </p>
+        </div>
+        <a class="back" href="/designs/">← Design Lab</a>
+      </header>
+
+      <main class="map">
+        <TheGenesis client:only="react" />
+      </main>
+    </div>
+  </body>
+</html>
+
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    background: #fdf8ef;
+    color: #413a55;
+    font-family: system-ui, sans-serif;
+    line-height: 1.5;
+  }
+
+  .shell {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .chrome {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 0.75rem 1.25rem;
+    background: #fdf8ef;
+    border-bottom: 1px solid rgba(65, 58, 85, 0.12);
+    flex: 0 0 auto;
+  }
+
+  .titles h1 {
+    font-size: 1.02rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .titles p {
+    font-size: 0.8rem;
+    color: rgba(65, 58, 85, 0.66);
+    max-width: 62ch;
+  }
+
+  .back {
+    flex: 0 0 auto;
+    font-size: 0.8rem;
+    text-decoration: none;
+    color: #2f9e7d;
+    border: 1px solid rgba(99, 201, 168, 0.55);
+    background: rgba(99, 201, 168, 0.14);
+    border-radius: 999px;
+    padding: 0.4rem 0.85rem;
+    white-space: nowrap;
+  }
+
+  .back:hover {
+    background: #63c9a8;
+    color: #17301f;
+  }
+
+  .map {
+    flex: 1 1 auto;
+    min-height: 0;
+    position: relative;
+    background: #3f7f66;
+  }
+
+  @media (max-width: 620px) {
+    .titles p {
+      display: none;
+    }
+  }
+</style>
