@@ -1,0 +1,246 @@
+---
+/**
+ * The days before — an archive of the last fortnight of valleys.
+ *
+ * The page is a shell on purpose. Every date on it is relative to the person
+ * reading it, and the homepage's day boundary is their own midnight, so the
+ * list can only be worked out in the browser: see `PastDays.tsx`. What is here
+ * is the chrome, the copy and the promise that nothing was stored.
+ */
+import PastDays from '../components/designs/genesis/PastDays';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Two weeks of valleys, none of them saved. Every day on this site is generated from its own date, so an old day can be built again from nothing but the date it was — towns, founders, weather and all."
+    />
+    <title>The days before · Ethan</title>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="/">CodeManEthan</a>
+      <nav>
+        <a href="/">Today&rsquo;s valley</a>
+        <a href="/#projects">Projects</a>
+        <a href="https://github.com/CodeManEthan" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="intro">
+        <p class="kicker">The archive that isn&rsquo;t one</p>
+        <h1>The days before</h1>
+        <p class="lede">
+          The valley on the front page is thrown away every midnight, and none
+          of them are kept anywhere &mdash; not on a server, not in this page.
+          They don&rsquo;t need to be. A day <em>is</em> its date: the date is
+          hashed into a seed, and the seed is the whole world. Give it back and
+          the valley comes back with it, the same river, the same towns, the
+          same names, down to the cart on the bridge.
+        </p>
+        <p class="lede">
+          So here is the last fortnight, rebuilt in your browser while you look
+          at it. Each picture is the real world, held at half past eight in the
+          evening; open one and you land on that same hour. One thing does carry
+          between days &mdash; every valley inherits a ruin from the day before
+          it, yesterday&rsquo;s landmark left standing in today&rsquo;s fields.
+          It is the only thread there is.
+        </p>
+        <div class="intro-actions">
+          <a class="btn primary" href="/">Today&rsquo;s valley &rarr;</a>
+          <a class="btn" href="/#about">How it works</a>
+        </div>
+      </section>
+
+      <section class="days" aria-label="The last fourteen days">
+        <PastDays client:only="react" />
+        <noscript>
+          <p class="noscript">
+            The days are generated in the browser, so this list needs
+            JavaScript. Nothing is lost if you&rsquo;d rather not: the front
+            page describes exactly how a date becomes a valley, and the projects
+            are all listed there in plain form.
+          </p>
+        </noscript>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        <a class="back" href="/">&larr; Back to today</a>
+      </p>
+      <p>© {new Date().getFullYear()} Ethan · Built with Astro, React &amp; a 2D canvas</p>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  /* The cards are React markup, so the palette has to be reachable from
+     outside this file's scope. Same values as the homepage. */
+  :root {
+    --cream: #fdf8ef;
+    --card: #ffffff;
+    --ink: #413a55;
+    --ink-soft: #7a7690;
+    --border: #ece3d2;
+    --mint: #63c9a8;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+</style>
+
+<style>
+  body {
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family:
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      'Helvetica Neue',
+      sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem clamp(0.9rem, 3vw, 2.4rem);
+    border-bottom: 2px solid var(--border);
+  }
+
+  .wordmark {
+    font-weight: 800;
+    font-size: 1.05rem;
+  }
+
+  .topbar nav {
+    display: flex;
+    gap: 1.2rem;
+  }
+
+  .topbar nav a {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    transition: color 0.15s ease;
+  }
+
+  .topbar nav a:hover {
+    color: var(--ink);
+  }
+
+  main {
+    max-width: 68rem;
+    margin: 0 auto;
+    padding: 3rem 1.4rem 2rem;
+  }
+
+  .kicker {
+    margin: 0 0 0.3rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #2f8f74;
+  }
+
+  h1 {
+    margin: 0 0 0.7rem;
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .lede {
+    margin: 0 0 0.9rem;
+    max-width: 46rem;
+    color: var(--ink-soft);
+  }
+
+  .intro {
+    margin-bottom: 2.6rem;
+  }
+
+  .intro-actions {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-top: 1.2rem;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.87rem;
+    border: 2px solid var(--ink);
+    background: #ffffff;
+    color: var(--ink);
+    transition:
+      transform 0.14s ease,
+      box-shadow 0.14s ease;
+    box-shadow: 0 3px 0 rgba(65, 58, 85, 0.25);
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 rgba(65, 58, 85, 0.25);
+  }
+
+  .btn.primary {
+    background: var(--mint);
+    color: #12483a;
+  }
+
+  .noscript {
+    max-width: 46rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    border-top: 2px solid var(--border);
+    margin-top: 4rem;
+    padding: 1.5rem 1.4rem 2.2rem;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+  }
+
+  footer p {
+    margin: 0 0 0.35rem;
+  }
+
+  .back {
+    font-weight: 700;
+    color: #2f8f74;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn {
+      transition: none;
+    }
+
+    .btn:hover {
+      transform: none;
+    }
+  }
+</style>
