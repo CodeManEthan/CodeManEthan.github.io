@@ -9,6 +9,7 @@ export const LOC: Record<string, number> = {
   docist: 18087,
   ludicrous: 4206,
   'one-record-many-bells': 2330,
+  genesis: 57208,
 };
 
 export const GEM_COLORS = [
