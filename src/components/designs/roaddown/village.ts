@@ -48,8 +48,8 @@ import {
   type StructureSpec,
   type RoofStyle,
   type StructureRole,
-} from '../vale/art';
-import { hashSeed } from '../genesis/types';
+} from '@codemanethan/genesis/art';
+import { hashSeed } from '@codemanethan/genesis/types';
 import { villageBuildingCount, villageRoster, type Role, type VillageData } from './meta';
 import { CARRIAGE, VERGE, roadCx, type World, type WorldRect } from './world';
 

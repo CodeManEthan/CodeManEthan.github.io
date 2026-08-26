@@ -708,7 +708,7 @@ const roadData = projects.map((p, i) => ({
         const [{ createRoot }, { createElement }, genesis, road] = await Promise.all([
           import('react-dom/client'),
           import('react'),
-          import('../../../components/designs/genesis/TheGenesis'),
+          import('@codemanethan/genesis/TheGenesis'),
           import('../../../components/designs/longroad/LongRoad'),
         ]);
 

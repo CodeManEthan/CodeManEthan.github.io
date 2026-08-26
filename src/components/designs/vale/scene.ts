@@ -59,7 +59,7 @@ import {
   type Ctx,
   type Pt,
   type Sprite,
-} from './art';
+} from '@codemanethan/genesis/art';
 import {
   isoX,
   isoY,

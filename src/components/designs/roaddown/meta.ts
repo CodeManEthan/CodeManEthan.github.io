@@ -6,7 +6,7 @@
  * whole of vale/art through the server build.
  */
 
-import { hashSeed, mulberry32 } from '../genesis/types';
+import { hashSeed, mulberry32 } from '@codemanethan/genesis/types';
 
 export type Status = 'public' | 'private' | 'soon';
 

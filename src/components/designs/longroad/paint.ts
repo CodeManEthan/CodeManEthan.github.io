@@ -41,10 +41,10 @@ import {
   type Ctx,
   type Sprite,
   type StructureSprite,
-} from '../vale/art.ts';
-import { makePools, paintRoad } from '../genesis/scene.ts';
-import type { Season } from '../genesis/daytype.ts';
-import { mulberry32 } from '../genesis/types.ts';
+} from '@codemanethan/genesis/art';
+import { makePools, paintRoad } from '@codemanethan/genesis/scene';
+import type { Season } from '@codemanethan/genesis/daytype';
+import { mulberry32 } from '@codemanethan/genesis/types';
 import { roadYAt, type VBot, type Village } from './village.ts';
 
 const TWH = 16; // TW / 2 — art px per unit of u

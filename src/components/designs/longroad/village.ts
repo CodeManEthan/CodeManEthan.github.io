@@ -26,8 +26,8 @@
  * strips, the ground diamonds) so the projection is the valley's own.
  */
 
-import { hashSeed, mulberry32 } from '../genesis/types.ts';
-import type { BuildMaterial, RoofStyle, StructureRole } from '../vale/art.ts';
+import { hashSeed, mulberry32 } from '@codemanethan/genesis/types';
+import type { BuildMaterial, RoofStyle, StructureRole } from '@codemanethan/genesis/art';
 
 /* ------------------------------ the input -------------------------------- */
 

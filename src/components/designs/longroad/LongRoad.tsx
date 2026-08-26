@@ -16,9 +16,9 @@
  */
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactElement } from 'react';
-import { hashSeed } from '../genesis/types.ts';
-import { seasonOf, type Season } from '../genesis/daytype.ts';
-import type { Sprite } from '../vale/art.ts';
+import { hashSeed } from '@codemanethan/genesis/types';
+import { seasonOf, type Season } from '@codemanethan/genesis/daytype';
+import type { Sprite } from '@codemanethan/genesis/art';
 import { buildScene, buildPools, paintBand, type RoadScene } from './paint.ts';
 import {
   layoutVillage,

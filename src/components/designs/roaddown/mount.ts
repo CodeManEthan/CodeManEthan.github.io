@@ -29,8 +29,8 @@ import {
   drawCart,
   drawRipple,
   type Sprite,
-} from '../vale/art';
-import { hashSeed, mulberry32 } from '../genesis/types';
+} from '@codemanethan/genesis/art';
+import { hashSeed, mulberry32 } from '@codemanethan/genesis/types';
 import { seasonNow, type VillageData } from './meta';
 import {
   SCALE,

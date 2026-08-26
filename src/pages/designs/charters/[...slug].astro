@@ -210,7 +210,7 @@ const charters = projects.map((p, i) => {
         const [{ createRoot }, { createElement }, hero, grid] = await Promise.all([
           import('react-dom/client'),
           import('react'),
-          import('../../../components/designs/genesis/TheGenesis'),
+          import('@codemanethan/genesis/TheGenesis'),
           import('../../../components/designs/charters/CharterGrid'),
         ]);
 

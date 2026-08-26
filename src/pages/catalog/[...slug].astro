@@ -41,7 +41,7 @@ export function getStaticPaths() {
         const [{ createRoot }, { createElement }, mod] = await Promise.all([
           import('react-dom/client'),
           import('react'),
-          import('../../components/designs/genesis/Catalog'),
+          import('@codemanethan/genesis/Catalog'),
         ]);
         const root = document.getElementById('catalog-root')!;
         createRoot(root).render(createElement(mod.default));

@@ -19,7 +19,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { TH, TW, shade } from './art';
+import { TH, TW, shade } from '@codemanethan/genesis/art';
 import {
   buildScene,
   renderScene,

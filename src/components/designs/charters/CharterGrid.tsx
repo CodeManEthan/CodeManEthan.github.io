@@ -30,17 +30,17 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { generateMap } from '../genesis/gen';
-import { buildTimeline, snapshotAt } from '../genesis/timeline';
-import { dayInfo, type DayInfo } from '../genesis/daytype';
+import { generateMap } from '@codemanethan/genesis/gen';
+import { buildTimeline, snapshotAt } from '@codemanethan/genesis/timeline';
+import { dayInfo, type DayInfo } from '@codemanethan/genesis/daytype';
 import {
   buildGenesisSceneSteps,
   makeAmbient,
   renderGenesis,
   settleAmbient,
   type GenesisScene,
-} from '../genesis/scene';
-import { TW, TH, hashSeed, type GenesisMap, type SiteSpec } from '../genesis/types';
+} from '@codemanethan/genesis/scene';
+import { TW, TH, hashSeed, type GenesisMap, type SiteSpec } from '@codemanethan/genesis/types';
 
 /* --------------------------------- shape --------------------------------- */
 

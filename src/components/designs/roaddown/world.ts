@@ -15,8 +15,8 @@
  * transform).
  */
 
-import { PAL, type Ctx, rect, isoTile, mulberry32, mix, shade } from '../vale/art';
-import { hashSeed } from '../genesis/types';
+import { PAL, type Ctx, rect, isoTile, mulberry32, mix, shade } from '@codemanethan/genesis/art';
+import { hashSeed } from '@codemanethan/genesis/types';
 import type { Season } from './meta';
 
 /* ------------------------------- the world ------------------------------- */
