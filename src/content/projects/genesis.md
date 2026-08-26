@@ -3,7 +3,7 @@ title: Genesis
 summary: The valley above. A pixel-art world this site rebuilds from scratch every day — seeded terrain and rivers, A*-routed roads, a self-pacing 24-hour construction timeline, and a hand-rolled canvas renderer holding a 4 ms frame budget.
 tech: [TypeScript, React, Astro, Canvas 2D, Procedural generation]
 status: public
-repo: https://github.com/CodeManEthan/CodeManEthan.github.io
+repo: https://github.com/CodeManEthan/genesis
 screenshot: /screenshots/genesis.png
 featured: true
 order: 7
@@ -43,6 +43,6 @@ cart on the bridge.
 
 ## Status
 
-Live — it's the front page of this site. The full source, including the
-generator, timeline, renderer, and test harnesses, is in the site's public
-repository.
+Live, and it's the front page of this site. The generator, timeline,
+renderer, and test harnesses live in their own public repository, which this
+site installs as a package.

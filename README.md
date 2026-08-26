@@ -57,34 +57,31 @@ npm run build      # production build to ./dist/
 npm run preview    # preview the production build
 ```
 
-There is no separate test runner — the Genesis harnesses are the test suite:
+There is no test runner in this repo. The world on the homepage comes from a package, and its harnesses live with it (see Genesis below).
+
+What is left in `scripts/`: `screenshot.mjs` / `screenshot-zoom.mjs` (puppeteer screenshots) and `build-world.mjs` / `tick-world.mjs` (the Vale's world builder and daily heartbeat, described under Structure). Both browser-driving scripts expect Chrome at `/usr/bin/google-chrome` and a dev server on `localhost:4321`.
+
+## Genesis
+
+The valley on the homepage, the `/days` archive, and the sprite catalog all come from https://github.com/CodeManEthan/genesis. That repo holds the generator, the timeline, the renderer, the sprite art, and the check, sweep, perf, and A/B harnesses that gate changes to them. The determinism contract, the append-only history rule, and the `?seed=` / `?day=` / `?t=` / `?pace=` / `?perf=` URL params are documented in its README.
+
+This site installs it as a git dependency, so the lockfile pins one commit of it. To pick up new genesis work:
 
 ```sh
-npm run genesis:check   # map + timeline generation: reports, invariants, fixtures
-npm run genesis:sweep   # invariants only, across 200 seeds
-npm run genesis:perf    # render-perf matrix in real Chrome (needs dev server running;
-                        # headless uses SwiftShader, so trust --headed numbers)
+npm update @codemanethan/genesis
 ```
 
-Also in `scripts/`: `genesis-ab.mjs` / `genesis-ab-png.mjs` (pixel-exact A/B capture and diff of the live canvas), `screenshot.mjs` / `screenshot-zoom.mjs` (puppeteer screenshots), and `build-world.mjs` / `tick-world.mjs` (the Vale's world builder and daily heartbeat — see below). The browser-driving scripts expect Chrome at `/usr/bin/google-chrome` and a dev server on `localhost:4321`.
-
-## Genesis: the rules that matter
-
-- **Determinism is the contract.** The seed is a hash of the UTC date; all randomness goes through `mulberry32`. `gen.ts`, `timeline.ts`, `daytype.ts`, `living.ts`, and `ghost.ts` must stay pure — no DOM, no `Date.now()`, no `Math.random()` — and importable by bare Node 22, so the same seed produces byte-identical worlds in the browser and in the harnesses.
-- **Append-only history.** The day-type frequency table, event type ranks, and road trees are append-only, so archived days on `/days` can never change retroactively.
-- **Subset stability.** A smaller `?pace=` builds a strict prefix of a larger one.
-- **Useful URL params** on `/`: `?seed=`, `?day=`, `?t=` (world hour), `?pace=`, `?speed=`, `?autoplay=1`, `?zoom=`, `?perf=`.
+Then commit the lockfile change. That is what moves the deployed site.
 
 ## Structure
 
 - `src/content/projects/` — one markdown file per project (the only thing you touch to add one)
 - `src/content.config.ts` — the project frontmatter schema
 - `src/pages/index.astro` — homepage (renders `GenesisHome.astro`)
-- `src/pages/days.astro` + `designs/genesis/PastDays.tsx` — the archive
+- `src/pages/days.astro` — the archive, rendering `PastDays` from the genesis package
 - `src/pages/projects/[slug].astro` — detail page template, generated per project
-- `src/pages/catalog/[...slug].astro` + `designs/genesis/Catalog.tsx` — dev-only sprite catalog
-- `src/components/designs/genesis/` — the world: `gen.ts` (map), `timeline.ts` (the day's arc), `scene.ts` (renderer), `daytype.ts`, `living.ts`, `ghost.ts`, `names.ts`, `TheGenesis.tsx`
-- `src/components/designs/vale/art.ts` — the pixel-sprite factories Genesis draws with
+- `src/pages/catalog/[...slug].astro` — dev-only sprite catalog, rendering `Catalog` from the genesis package
+- `src/components/designs/` — the Design Lab worlds (vale, longroad, roaddown, charters, flux, orbital). The pixel ones draw with sprites from `@codemanethan/genesis/art`
 - `src/data/islands.ts` — hand-maintained `LOC` counts and per-project accent colors
 - `src/data/world.json` — the **Vale's** committed world state, advanced by `tick-world.mjs` (`Vale day NNN: …` commits). The Vale is no longer routed, so this is frozen history unless it's revived
 - `.github/workflows/deploy.yml` — build + deploy to GitHub Pages

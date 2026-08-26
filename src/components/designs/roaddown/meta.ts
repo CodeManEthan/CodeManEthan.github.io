@@ -3,7 +3,7 @@
  *
  * Pure data and naming. Deliberately free of any canvas import so the Astro
  * page can pull `villageSizeLabel` into its frontmatter without dragging the
- * whole of vale/art through the server build.
+ * whole of `@codemanethan/genesis/art` through the server build.
  */
 
 import { hashSeed, mulberry32 } from '@codemanethan/genesis/types';

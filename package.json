@@ -9,10 +9,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
-    "genesis:check": "node scripts/genesis-stats.mjs && node scripts/genesis-timeline-stats.mjs",
-    "genesis:sweep": "node scripts/genesis-stats.mjs --sweep 200",
-    "genesis:perf": "node scripts/genesis-perf.mjs"
+    "astro": "astro"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.1",
