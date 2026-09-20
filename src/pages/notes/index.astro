@@ -1,0 +1,72 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const notes = (await getCollection('notes', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+---
+
+<Base
+  title="Notes · Ethan Plunk"
+  description="Write-ups on what I'm building and what I learned doing it."
+  noindex={notes.length === 0}
+>
+  <section class="notes">
+    <h1>Notes</h1>
+    <p class="line">
+      {notes.length ? "Write-ups on what I'm building and what I learned doing it." : 'Nothing here yet.'}
+    </p>
+    {notes.length > 0 && (
+      <ul class="list">
+        {notes.map((note) => (
+          <li>
+            <time datetime={fmt(note.data.date)}>{fmt(note.data.date)}</time>
+            <h2><a href={`/notes/${note.id}/`}>{note.data.title}</a></h2>
+            <p>{note.data.summary}</p>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+</Base>
+
+<style>
+  .notes {
+    max-width: 46rem;
+    margin: 2.5rem auto 0;
+  }
+
+  .line {
+    color: var(--ink-soft);
+    margin-top: 0.5rem;
+  }
+
+  .list {
+    list-style: none;
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+
+  time {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    font-family: var(--font-code);
+  }
+
+  .list h2 {
+    font-size: 1.3rem;
+    margin: 0.2rem 0 0.3rem;
+  }
+
+  .list h2 a {
+    color: var(--ink);
+  }
+
+  .list p {
+    color: var(--ink-soft);
+  }
+</style>

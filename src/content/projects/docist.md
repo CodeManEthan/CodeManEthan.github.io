@@ -7,7 +7,7 @@ repo: https://github.com/CodeManEthan/docist
 demo: https://docist-production.up.railway.app
 screenshot: /screenshots/docist.png
 featured: true
-order: 4
+order: 5
 ---
 
 ## Live demo

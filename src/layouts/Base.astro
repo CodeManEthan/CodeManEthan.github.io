@@ -1,16 +1,40 @@
 ---
+/**
+ * Site layout: top bar, main, footer, the palette tokens (which must equal
+ * scripts/brand.py; scripts/contrast.py asserts it) and the page metadata.
+ */
+import { getCollection } from 'astro:content';
+
 interface Props {
   title: string;
-  description?: string;
-  /** Per-page accent color (a project's island gem color). */
-  accent?: string;
+  description: string;
+  /** Preview image, site-relative or absolute. Defaults to the generated site image. */
+  image?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  /** Fill the viewport with main and drop the footer (the Genesis page). */
+  fill?: boolean;
 }
 
 const {
   title,
-  description = 'Portfolio of Ethan — software engineer and agentic engineer.',
-  accent = '#63c9a8',
+  description,
+  image = '/og/default.png',
+  type = 'website',
+  noindex = false,
+  fill = false,
 } = Astro.props;
+
+const site = Astro.site ?? new URL('https://codemanethan.github.io');
+const canonical = new URL(Astro.url.pathname, site).href;
+const imageUrl = new URL(image, site).href;
+const path = Astro.url.pathname;
+
+// The Notes link renders only when a non-draft post exists.
+const hasNotes = (await getCollection('notes', ({ data }) => !data.draft)).length > 0;
+
+const active = (prefix: string) => (path === prefix || path.startsWith(prefix) ? 'active' : undefined);
+const year = new Date().getFullYear();
 ---
 
 <!doctype html>
@@ -18,43 +42,109 @@ const {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content="Ethan Plunk" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
   </head>
-  <body style={`--accent: ${accent};`}>
+  <body class:list={[{ fill }]}>
+    <a class="skip" href={path === '/' ? '#projects' : '#main'}>Skip to content</a>
     <header class="site-header">
-      <nav>
+      <nav aria-label="Site">
         <a href="/" class="brand">CodeManEthan</a>
         <div class="nav-links">
-          <a href="/#projects">Projects</a>
+          <a href="/#projects" class={active('/projects/')}>Projects</a>
+          {hasNotes && <a href="/notes/" class={active('/notes/')}>Notes</a>}
           <a href="/#about">About</a>
-          <a href="https://github.com/CodeManEthan" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/CodeManEthan" class="handle" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://www.linkedin.com/in/j-ethan-plunk" class="handle" target="_blank" rel="noopener">LinkedIn</a>
         </div>
       </nav>
     </header>
-    <main>
+    <main id="main">
       <slot />
     </main>
-    <footer class="site-footer">
-      <p>
-        © {new Date().getFullYear()} Ethan · Built with Astro + Three.js ·
-        <a href="https://github.com/CodeManEthan" target="_blank" rel="noopener">github.com/CodeManEthan</a>
-      </p>
-    </footer>
+    {!fill && (
+      <footer class="site-footer">
+        <nav class="footer-site" aria-label="Site, small screens">
+          <a href="/#projects">Projects</a>
+          {hasNotes && <a href="/notes/">Notes</a>}
+          <a href="/#about">About</a>
+        </nav>
+        <p>© {year} Ethan Plunk · Built with Astro</p>
+        <nav class="handles" aria-label="Elsewhere">
+          <a href="https://github.com/CodeManEthan" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://www.linkedin.com/in/j-ethan-plunk" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://twitch.tv/codemanethan" target="_blank" rel="noopener">Twitch</a>
+          <a href="https://youtube.com/@codemanethan" target="_blank" rel="noopener">YouTube</a>
+        </nav>
+      </footer>
+    )}
   </body>
 </html>
 
 <style is:global>
   :root {
-    --cream: #fdf8ef;
-    --card: #ffffff;
-    --ink: #43405a;
-    --ink-soft: #7a7690;
-    --border: #ece3d2;
-    --mint: #63c9a8;
-    --radius: 16px;
+    --bg: #232627;
+    --surface: #2b2f31;
+    --border: #66707a;
+    --ink: #f5f5f0;
+    --ink-soft: #a0a5aa;
+    --teal: #1abc9c;
+    --teal-ink: #0f2a25;
+    --radius: 14px;
     --max-width: 1080px;
+    --gutter: 1.25rem;
+    --font-display: 'Red Hat Display', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font-text: 'Red Hat Text', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font-code: 'Source Code Pro', ui-monospace, Menlo, Consolas, monospace;
+  }
+
+  @font-face {
+    font-family: 'Red Hat Display';
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src: url('/fonts/RedHatDisplay-Bold.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Red Hat Text';
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: url('/fonts/RedHatText-Regular.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Red Hat Text';
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+    src: url('/fonts/RedHatText-Medium.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Red Hat Text';
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src: url('/fonts/RedHatText-Bold.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Source Code Pro';
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: url('/fonts/SourceCodePro-Regular.woff2') format('woff2');
   }
 
   * {
@@ -65,6 +155,7 @@ const {
 
   html {
     scroll-behavior: smooth;
+    background: var(--bg);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -74,15 +165,50 @@ const {
   }
 
   body {
-    background: var(--cream);
+    background: var(--bg);
     color: var(--ink);
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    font-family: var(--font-text);
+    font-size: 1rem;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body.fill {
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  body.fill main {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+  }
+
+  h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
   }
 
   a {
-    color: color-mix(in srgb, var(--accent) 65%, var(--ink));
+    color: var(--teal);
     text-decoration: none;
   }
 
@@ -90,32 +216,65 @@ const {
     text-decoration: underline;
   }
 
+  :focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 2px;
+  }
+
   main {
+    width: 100%;
     max-width: var(--max-width);
     margin: 0 auto;
-    padding: 0 1.25rem;
+    padding: 0 var(--gutter);
+    flex: 1 0 auto;
+  }
+
+  .skip {
+    position: absolute;
+    left: var(--gutter);
+    top: -3rem;
+    z-index: 20;
+    padding: 0.5rem 1rem;
+    background: var(--teal);
+    color: var(--teal-ink);
+    border-radius: 999px;
+    font-weight: 700;
+  }
+
+  .skip:focus {
+    top: 0.6rem;
+    text-decoration: none;
   }
 
   .site-header {
     position: sticky;
     top: 0;
     z-index: 10;
-    background: color-mix(in srgb, var(--cream) 88%, transparent);
+    background: color-mix(in srgb, var(--bg) 90%, transparent);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
+    flex: 0 0 auto;
+  }
+
+  body.fill .site-header {
+    position: static;
   }
 
   .site-header nav {
     max-width: var(--max-width);
     margin: 0 auto;
-    padding: 0.9rem 1.25rem;
+    padding: 0.85rem var(--gutter);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 1rem;
   }
 
   .brand {
-    font-weight: 800;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
     color: var(--ink);
     letter-spacing: 0.01em;
   }
@@ -126,13 +285,15 @@ const {
 
   .nav-links {
     display: flex;
-    gap: 1.5rem;
+    gap: 1.4rem;
   }
 
   .nav-links a {
     color: var(--ink-soft);
-    font-weight: 600;
+    font-weight: 500;
     font-size: 0.92rem;
+    padding: 0.2rem 0;
+    border-bottom: 2px solid transparent;
   }
 
   .nav-links a:hover {
@@ -140,26 +301,97 @@ const {
     text-decoration: none;
   }
 
+  .nav-links a.active {
+    color: var(--ink);
+    border-bottom-color: var(--teal);
+  }
+
   .site-footer {
     border-top: 1px solid var(--border);
     margin-top: 5rem;
-    padding: 2rem 1.25rem;
+    padding: 2rem var(--gutter) 2.4rem;
     text-align: center;
     color: var(--ink-soft);
     font-size: 0.9rem;
+    flex: 0 0 auto;
+  }
+
+  .site-footer nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    margin-top: 0.6rem;
+  }
+
+  .site-footer .footer-site {
+    display: none;
+    margin: 0 0 0.8rem;
+  }
+
+  .site-footer a {
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+
+  .site-footer a:hover {
+    color: var(--teal);
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--teal);
+    color: var(--ink);
+    font-weight: 500;
+    font-size: 0.95rem;
+    line-height: 1.3;
+    background: transparent;
+  }
+
+  .btn:hover {
+    text-decoration: none;
+    background: color-mix(in srgb, var(--teal) 12%, transparent);
+  }
+
+  .btn.primary {
+    background: var(--teal);
+    color: var(--teal-ink);
+    font-weight: 700;
+  }
+
+  .btn.primary:hover {
+    background: color-mix(in srgb, var(--teal) 88%, white);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+  }
+
+  .chips li {
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 0.14rem 0.62rem;
+    border: 1px solid color-mix(in srgb, var(--teal) 40%, transparent);
+    border-radius: 999px;
+    color: var(--ink-soft);
   }
 
   code {
-    font-family: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Menlo, monospace;
+    font-family: var(--font-code);
     font-size: 0.9em;
-    background: #f6efe1;
+    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 6px;
     padding: 0.1em 0.35em;
   }
 
   pre {
-    background: #f6efe1;
+    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 1rem;
@@ -171,5 +403,19 @@ const {
     background: none;
     border: none;
     padding: 0;
+  }
+
+  @media (max-width: 480px) {
+    .nav-links {
+      gap: 1rem;
+    }
+
+    .nav-links a:not(.handle) {
+      display: none;
+    }
+
+    .site-footer .footer-site {
+      display: flex;
+    }
   }
 </style>

@@ -6,7 +6,7 @@ status: public
 repo: https://github.com/CodeManEthan/project-hub
 demo: https://codemanethan.github.io/project-hub/
 screenshot: /screenshots/project-hub.png
-order: 6
+order: 9
 ---
 
 ## Overview

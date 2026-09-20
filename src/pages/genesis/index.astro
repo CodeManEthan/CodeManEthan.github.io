@@ -1,0 +1,53 @@
+---
+/**
+ * The full valley, with the package's own world UI open. The page holds
+ * nothing below the shell: at embed={false} the wheel over the canvas zooms
+ * the map, so a page that scrolled under it could not be scrolled.
+ */
+import TheGenesis from '@codemanethan/genesis/TheGenesis';
+import Base from '../../layouts/Base.astro';
+---
+
+<Base
+  title="Genesis · Ethan Plunk"
+  description="A pixel-art valley built from today's date: one house at midnight, towns and a highway by evening, gone at midnight so the next date's valley can rise."
+  image="/screenshots/genesis.png"
+  fill
+>
+  <div class="shell">
+    <TheGenesis client:only="react" />
+    <p class="caption">
+      The valley, built from today's date. <a href="/projects/genesis/">How it works →</a>
+    </p>
+  </div>
+</Base>
+
+<style>
+  .shell {
+    position: relative;
+    height: 100%;
+    min-height: 0;
+    background: #3f7f66;
+  }
+
+  /* Bottom-right: the package's ticker owns the bottom-left corner. */
+  .caption {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    z-index: 5;
+    margin: 0;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    color: var(--ink);
+    font-size: 0.82rem;
+    line-height: 1.4;
+    pointer-events: none;
+  }
+
+  .caption a {
+    pointer-events: auto;
+    font-weight: 500;
+  }
+</style>

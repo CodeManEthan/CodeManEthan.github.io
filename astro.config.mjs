@@ -7,6 +7,8 @@ import react from '@astrojs/react';
 export default defineConfig({
   site: 'https://codemanethan.github.io',
   integrations: [react()],
+  // The old days archive URL; the page lives under /genesis/ now.
+  redirects: { '/days': '/genesis/days/' },
   vite: {
     server: {
       // When @codemanethan/genesis is npm-linked to ~/projects/genesis, Vite

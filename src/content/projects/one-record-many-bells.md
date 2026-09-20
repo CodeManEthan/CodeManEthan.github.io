@@ -5,7 +5,7 @@ tech: [Python, stdlib-only, Agent infrastructure, Discord]
 status: public
 repo: https://github.com/CodeManEthan/one-record-many-bells
 featured: true
-order: 2
+order: 6
 ---
 
 ## Overview
