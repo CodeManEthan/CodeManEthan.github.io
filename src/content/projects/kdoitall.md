@@ -5,7 +5,7 @@ tech: [Bash, SQLite, KDE Plasma, Wayland, X11]
 status: public
 repo: https://github.com/CodeManEthan/kdoitall
 featured: true
-order: 3
+order: 7
 ---
 
 ## Overview

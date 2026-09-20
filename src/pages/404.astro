@@ -1,0 +1,42 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Not found · Ethan Plunk" description="There is no page at this address." noindex>
+  <section class="nf">
+    <p class="kicker">404</p>
+    <h1>Not found</h1>
+    <p>There is no page at this address.</p>
+    <div class="actions">
+      <a class="btn primary" href="/">Home</a>
+      <a class="btn" href="/#projects">Projects</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    max-width: 46rem;
+    margin: 3rem auto 0;
+  }
+
+  .kicker {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 0.6rem;
+  }
+
+  .nf p {
+    color: var(--ink-soft);
+    margin-top: 0.6rem;
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 1.4rem;
+  }
+</style>

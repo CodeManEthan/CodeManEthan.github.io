@@ -23,3 +23,7 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 .claude/worktrees/
+
+# tooling scratch
+.playwright-cli/
+__pycache__/

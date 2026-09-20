@@ -6,7 +6,7 @@ status: private
 demo: https://finance-tracker-production-a51c.up.railway.app
 screenshot: /screenshots/finance-tracker.png
 featured: true
-order: 1
+order: 3
 ---
 
 ## Live demo

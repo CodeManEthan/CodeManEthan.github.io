@@ -1,0 +1,86 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const notes = await getCollection('notes', ({ data }) => !data.draft);
+  return notes.map((note) => ({ params: { slug: note.id }, props: { note } }));
+}
+
+const { note } = Astro.props;
+const { title, date, summary, image } = note.data;
+const iso = date.toISOString().slice(0, 10);
+const { Content } = await render(note);
+---
+
+<Base title={`${title} · Ethan Plunk`} description={summary} image={image} type="article">
+  <article class="note">
+    <a href="/notes/" class="back">← Notes</a>
+    <time datetime={iso}>{iso}</time>
+    <h1>{title}</h1>
+    <p class="summary">{summary}</p>
+    <div class="body">
+      <Content />
+    </div>
+    <p class="back-row"><a href="/notes/">← Notes</a></p>
+  </article>
+</Base>
+
+<style>
+  .note {
+    max-width: 46rem;
+    margin: 2.5rem auto 0;
+  }
+
+  .back {
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  time {
+    display: block;
+    margin-top: 1.2rem;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    font-family: var(--font-code);
+  }
+
+  h1 {
+    margin: 0.3rem 0 0.6rem;
+  }
+
+  .summary {
+    color: var(--ink-soft);
+    font-size: 1.1rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .body :global(h2) {
+    font-size: 1.4rem;
+    margin: 2rem 0 0.8rem;
+  }
+
+  .body :global(h3) {
+    font-size: 1.15rem;
+    margin: 1.5rem 0 0.6rem;
+  }
+
+  .body :global(p) {
+    margin-bottom: 1rem;
+  }
+
+  .body :global(ul),
+  .body :global(ol) {
+    margin: 0 0 1rem 1.4rem;
+  }
+
+  .body :global(li) {
+    margin-bottom: 0.35rem;
+  }
+
+  .back-row {
+    margin-top: 3rem;
+    font-weight: 500;
+  }
+</style>
