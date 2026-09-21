@@ -1,6 +1,6 @@
 """Generated images, from brand.py: the site-wide default preview (1200x630) and the
-card graphics for the two private entries (1600x900, no screenshot, no diagram).
-Run: python3 scripts/make_og.py        (writes public/og/default.png and public/images/*.png)"""
+card graphics for the two draft entries under drafts/ (1600x900, no screenshot, no diagram).
+Run: python3 scripts/make_og.py        (writes public/og/default.png and drafts/images/*.png)"""
 import re
 import subprocess
 import sys
@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from brand import BG, FONT_DISPLAY, FONT_TEXT, GREY_HEX, INK, TEAL, rgb  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-CONTENT = ROOT / "src" / "content" / "projects"
+CONTENT = ROOT / "drafts" / "projects"
 
 NAME = "Ethan Plunk"
 SUBLINE = ("Software developer. Full-stack apps, Linux tooling, "
@@ -73,7 +73,7 @@ def panel(size: tuple[int, int], title: str, title_font: ImageFont.FreeTypeFont,
 
 def main() -> None:
     out_og = ROOT / "public" / "og"
-    out_img = ROOT / "public" / "images"
+    out_img = ROOT / "drafts" / "images"
     out_og.mkdir(parents=True, exist_ok=True)
     out_img.mkdir(parents=True, exist_ok=True)
 

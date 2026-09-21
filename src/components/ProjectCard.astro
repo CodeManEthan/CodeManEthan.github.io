@@ -13,12 +13,17 @@ const alt = image ? title : `${title} screenshot`;
 const isGenesis = project.id === 'genesis';
 ---
 
+<!--
+  The whole card opens the project page: the title link is stretched over the
+  card with a pseudo-element, and the Source and demo links sit above it so they
+  still go where they say.
+-->
 <article class="card">
-  <a href={detailUrl} class="thumb" tabindex="-1" aria-hidden="true">
+  <div class="thumb">
     {art ? <img src={art} alt={alt} loading="lazy" width="1600" height="900" /> : <div class="panel"><span>{title}</span></div>}
-  </a>
+  </div>
   <div class="card-body">
-    <h3><a href={detailUrl}>{title}</a></h3>
+    <h3><a href={detailUrl} class="stretch">{title}</a></h3>
     <p>{summary}</p>
     <ul class="chips" aria-label="Built with">
       {tech.map((t) => <li>{t}</li>)}
@@ -41,6 +46,7 @@ const isGenesis = project.id === 'genesis';
 
 <style>
   .card {
+    position: relative;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -52,9 +58,22 @@ const isGenesis = project.id === 'genesis';
       border-color 0.15s ease;
   }
 
-  .card:hover {
+  .card:hover,
+  .card:focus-within {
     transform: translateY(-2px);
     border-color: var(--teal);
+  }
+
+  .stretch::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .card-links a,
+  .card-links .badge {
+    position: relative;
+    z-index: 1;
   }
 
   @media (prefers-reduced-motion: reduce) {
