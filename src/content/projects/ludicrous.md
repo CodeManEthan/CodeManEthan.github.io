@@ -1,6 +1,6 @@
 ---
 title: Ludicrous
-summary: "Card games at absurd scale: War and Blackjack with 1,000 players, simulated in seconds and played back in the browser with a scrubber, live table and charts. Python engine with a Rust and WebAssembly core."
+summary: "Card games at absurd scale: War with 1,000 players and Blackjack with 200 seats, simulated in seconds and played back in the browser with a scrubber, live table and charts. Python engine with a Rust and WebAssembly core."
 tech: [Python, Rust, WebAssembly, JavaScript, Canvas]
 status: public
 repo: https://github.com/CodeManEthan/ludicrous
@@ -15,7 +15,7 @@ Ludicrous (formerly a Tkinter War game) takes games meant for a kitchen table an
 
 ## Highlights
 
-- **Two games** — War (pure luck, up to 1,000 players) and Blackjack (multi-seat vs the dealer, S17, 3:2 blackjacks, doubling, pair splitting).
+- **Two games** — War (pure luck, up to 1,000 players) and Blackjack (up to 200 seats vs the dealer, S17, 3:2 blackjacks, doubling, pair splitting).
 - **Pluggable strategies** — assign hit/stand policies per Blackjack seat and chart EV per hand by strategy over hundreds of thousands of hands; basic strategy validates at published EV.
 - **Video-style playback** — play/pause, 1 to 5,000 rounds/sec, a scrubber, single-round stepping, and "pause on eliminations", with real card faces and a card-count chart you can click to seek.
 - **Batch statistics** — thousands of games in parallel across CPU cores; histograms of game lengths, wins by seat, and outlier games you can replay card by card from their seed.
