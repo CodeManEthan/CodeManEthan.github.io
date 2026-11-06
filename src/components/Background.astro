@@ -1,0 +1,263 @@
+---
+/**
+ * Page background, fixed behind the content. Eight trial designs keyed on
+ * body[data-bg]; four static, four with slow opacity fades. The site ships
+ * with wandering dots (set in Base.astro). In dev a switcher in the corner
+ * overrides the attribute and keeps the choice in localStorage.
+ * Not rendered on the Genesis pages.
+ */
+const dev = import.meta.env.DEV;
+const options = [
+  ['', 'None (flat)', ''],
+  ['grain', 'Grain', 'static'],
+  ['glow', 'Glow', 'static'],
+  ['dots', 'Dot grid', 'static'],
+  ['contour', 'Contour', 'static'],
+  ['breathe', 'Breathing glow', 'motion'],
+  ['aurora', 'Aurora', 'motion'],
+  ['dots-wander', 'Wandering dots', 'motion'],
+  ['stars', 'Stars', 'motion'],
+];
+---
+
+<div class="bg" aria-hidden="true">
+  <div class="layer a"></div>
+  <div class="layer b"></div>
+  <div class="layer c"></div>
+  <svg class="stars" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+    <g class="s1">
+      <circle cx="120" cy="140" r="2.8"/><circle cx="410" cy="60" r="2.4"/><circle cx="760" cy="210" r="2.6"/>
+      <circle cx="1180" cy="90" r="2.9"/><circle cx="1490" cy="300" r="2.4"/><circle cx="240" cy="620" r="2.6"/>
+      <circle cx="930" cy="540" r="2.4"/><circle cx="1340" cy="700" r="2.7"/><circle cx="600" cy="880" r="2.5"/>
+      <circle cx="1520" cy="940" r="2.4"/>
+    </g>
+    <g class="s2">
+      <circle cx="300" cy="330" r="2.5"/><circle cx="880" cy="120" r="2.8"/><circle cx="1050" cy="420" r="2.4"/>
+      <circle cx="1420" cy="180" r="2.6"/><circle cx="80" cy="820" r="2.7"/><circle cx="520" cy="470" r="2.4"/>
+      <circle cx="1230" cy="860" r="2.5"/><circle cx="700" cy="720" r="2.9"/><circle cx="1580" cy="560" r="2.4"/>
+      <circle cx="960" cy="960" r="2.6"/>
+    </g>
+    <g class="s3">
+      <circle cx="40" cy="420" r="2.4"/><circle cx="640" cy="30" r="2.6"/><circle cx="1300" cy="380" r="2.8"/>
+      <circle cx="820" cy="380" r="2.4"/><circle cx="380" cy="760" r="2.5"/><circle cx="1110" cy="640" r="2.7"/>
+      <circle cx="1460" cy="820" r="2.4"/><circle cx="200" cy="960" r="2.6"/><circle cx="1000" cy="250" r="2.4"/>
+      <circle cx="560" cy="180" r="2.5"/>
+    </g>
+    <g class="s4 teal">
+      <circle cx="1390" cy="120" r="3.0"/><circle cx="170" cy="500" r="2.9"/><circle cx="860" cy="820" r="3.0"/>
+    </g>
+  </svg>
+</div>
+
+{dev && (
+  <div class="bg-switch" role="group" aria-label="Background trial">
+    {options.map(([key, label, kind]) => (
+      <button type="button" data-key={key}>{label}{kind && <small>{kind}</small>}</button>
+    ))}
+  </div>
+)}
+
+{dev && (
+  <script is:inline>
+    (() => {
+      const KEY = 'bg-trial';
+      let current = '';
+      let stored = null;
+      try { stored = localStorage.getItem(KEY); } catch {}
+      current = stored === null ? (document.body.dataset.bg || '') : stored;
+      const apply = (k) => {
+        if (k) document.body.dataset.bg = k; else delete document.body.dataset.bg;
+        document.querySelectorAll('.bg-switch button').forEach((b) => b.classList.toggle('on', b.dataset.key === k));
+      };
+      apply(current);
+      document.querySelector('.bg-switch').addEventListener('click', (e) => {
+        const b = e.target.closest('button');
+        if (!b) return;
+        try { localStorage.setItem(KEY, b.dataset.key); } catch {}
+        apply(b.dataset.key);
+      });
+    })();
+  </script>
+)}
+
+<style is:global>
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .bg .layer,
+  .bg .stars {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+
+  /* ---- static ---- */
+
+  /* Grain: fine monochrome noise, blended so it darkens as much as it lightens. */
+  body[data-bg='grain'] .bg .a {
+    opacity: 0.16;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 240px 240px;
+  }
+
+  /* Glow: one soft teal light top-left, a cooler counter-light bottom-right, edges a touch darker. */
+  body[data-bg='glow'] .bg .a,
+  body[data-bg='breathe'] .bg .a {
+    opacity: 1;
+    background:
+      radial-gradient(70vw 60vh at 12% 8%, rgba(26, 188, 156, 0.26), transparent 70%),
+      radial-gradient(60vw 55vh at 92% 96%, rgba(160, 175, 190, 0.16), transparent 70%);
+  }
+  body[data-bg='glow'] .bg .b,
+  body[data-bg='breathe'] .bg .b {
+    opacity: 1;
+    background: radial-gradient(120vw 100vh at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.45));
+  }
+
+  /* Dot grid: 1px dots on a 28px pitch, fading out toward the edges. */
+  body[data-bg='dots'] .bg .a,
+  body[data-bg='dots-wander'] .bg .a {
+    opacity: 1;
+    background-image: radial-gradient(rgba(245, 245, 240, 0.55) 1.4px, transparent 1.7px);
+    background-size: 28px 28px;
+    background-position: 14px 14px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 35%, black 25%, transparent 100%);
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 35%, black 25%, transparent 100%);
+  }
+
+  /* Contour: topographic lines, generated by scripts/make_contours.mjs. */
+  body[data-bg='contour'] .bg .a {
+    opacity: 0.16;
+    background: url('/bg/contour.svg') center / cover no-repeat;
+  }
+  body[data-bg='contour'] .bg .b {
+    opacity: 1;
+    background: radial-gradient(110vw 90vh at 50% 45%, transparent 50%, rgba(0, 0, 0, 0.45));
+  }
+
+  /* ---- motion: opacity fades only, still under reduced motion ---- */
+
+  /* Breathing glow: the teal light slowly brightens and dims. */
+  body[data-bg='breathe'] .bg .a {
+    animation: bg-breathe 16s ease-in-out infinite;
+  }
+  @keyframes bg-breathe {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  /* Aurora: two soft lights on offset cycles, so the light seems to move. */
+  body[data-bg='aurora'] .bg .a {
+    background: radial-gradient(65vw 65vh at 20% 25%, rgba(26, 188, 156, 0.28), transparent 70%);
+    animation: bg-fade 22s ease-in-out infinite;
+  }
+  body[data-bg='aurora'] .bg .b {
+    background: radial-gradient(65vw 65vh at 78% 70%, rgba(150, 170, 200, 0.22), transparent 70%);
+    animation: bg-fade 30s ease-in-out -11s infinite;
+  }
+  body[data-bg='aurora'] .bg .c {
+    opacity: 1;
+    background: radial-gradient(120vw 100vh at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.4));
+  }
+  @keyframes bg-fade {
+    0%, 100% { opacity: 0.15; }
+    50% { opacity: 1; }
+  }
+
+  /* Wandering dots: the grid stays; a brighter patch of dots fades in at one place, then another. */
+  body[data-bg='dots-wander'] .bg .a {
+    opacity: 0.55;
+  }
+  body[data-bg='dots-wander'] .bg .b,
+  body[data-bg='dots-wander'] .bg .c {
+    background-image: radial-gradient(rgba(245, 245, 240, 0.7) 1.4px, transparent 1.7px);
+    background-size: 28px 28px;
+    background-position: 14px 14px;
+  }
+  body[data-bg='dots-wander'] .bg .b {
+    -webkit-mask-image: radial-gradient(36vw 36vw at 22% 30%, black, transparent 100%);
+    mask-image: radial-gradient(36vw 36vw at 22% 30%, black, transparent 100%);
+    animation: bg-fade 24s ease-in-out infinite;
+  }
+  body[data-bg='dots-wander'] .bg .c {
+    -webkit-mask-image: radial-gradient(36vw 36vw at 76% 65%, black, transparent 100%);
+    mask-image: radial-gradient(36vw 36vw at 76% 65%, black, transparent 100%);
+    animation: bg-fade 24s ease-in-out -12s infinite;
+  }
+
+  /* Stars: a few faint points that come and go on staggered cycles. */
+  body[data-bg='stars'] .bg .stars {
+    opacity: 1;
+    fill: var(--ink);
+  }
+  body[data-bg='stars'] .bg .stars .teal {
+    fill: var(--teal);
+  }
+  body[data-bg='stars'] .bg .stars g {
+    opacity: 0.35;
+    animation: bg-twinkle 14s ease-in-out infinite;
+  }
+  body[data-bg='stars'] .bg .stars .s2 { animation-duration: 18s; animation-delay: -6s; }
+  body[data-bg='stars'] .bg .stars .s3 { animation-duration: 21s; animation-delay: -13s; }
+  body[data-bg='stars'] .bg .stars .s4 { animation-duration: 26s; animation-delay: -4s; }
+  @keyframes bg-twinkle {
+    0%, 100% { opacity: 0.15; }
+    50% { opacity: 0.95; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bg .layer,
+    .bg .stars g {
+      animation: none !important;
+    }
+    body[data-bg='breathe'] .bg .a { opacity: 0.8; }
+    body[data-bg='aurora'] .bg .a,
+    body[data-bg='aurora'] .bg .b { opacity: 0.6; }
+    body[data-bg='dots-wander'] .bg .b,
+    body[data-bg='dots-wander'] .bg .c { opacity: 0.5; }
+    body[data-bg='stars'] .bg .stars g { opacity: 0.6; }
+  }
+
+  /* ---- dev switcher ---- */
+  .bg-switch {
+    position: fixed;
+    right: 0.8rem;
+    bottom: 0.8rem;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 0.3rem;
+    padding: 0.5rem;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    backdrop-filter: blur(8px);
+    font-size: 0.72rem;
+  }
+  .bg-switch button {
+    font: inherit;
+    color: var(--ink-soft);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.3rem 0.5rem;
+    cursor: pointer;
+    text-align: left;
+    line-height: 1.2;
+  }
+  .bg-switch button small {
+    display: block;
+    font-size: 0.62rem;
+    opacity: 0.7;
+  }
+  .bg-switch button.on {
+    color: var(--teal-ink);
+    background: var(--teal);
+    border-color: var(--teal);
+  }
+</style>

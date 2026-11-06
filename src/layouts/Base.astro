@@ -4,6 +4,7 @@
  * scripts/brand.py; scripts/contrast.py asserts it) and the page metadata.
  */
 import { getCollection } from 'astro:content';
+import Background from '../components/Background.astro';
 
 interface Props {
   title: string;
@@ -14,6 +15,8 @@ interface Props {
   noindex?: boolean;
   /** Fill the viewport with main and drop the footer (the Genesis page). */
   fill?: boolean;
+  /** No page background layer (the Genesis pages). Implied by fill. */
+  plain?: boolean;
 }
 
 const {
@@ -23,6 +26,7 @@ const {
   type = 'website',
   noindex = false,
   fill = false,
+  plain = false,
 } = Astro.props;
 
 const site = Astro.site ?? new URL('https://codemanethan.github.io');
@@ -58,7 +62,8 @@ const year = new Date().getFullYear();
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageUrl} />
   </head>
-  <body class:list={[{ fill }]}>
+  <body class:list={[{ fill }]} data-bg={!fill && !plain ? 'dots-wander' : undefined}>
+    {!fill && !plain && <Background />}
     <a class="skip" href={path === '/' ? '#projects' : '#main'}>Skip to content</a>
     <header class="site-header">
       <nav aria-label="Site">
@@ -165,7 +170,7 @@ const year = new Date().getFullYear();
   }
 
   body {
-    background: var(--bg);
+    /* No background here: html carries --bg, and the fixed page background layer sits between them. */
     color: var(--ink);
     font-family: var(--font-text);
     font-size: 1rem;
